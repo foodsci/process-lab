@@ -1,0 +1,1207 @@
+<title>식품 공정 실험실</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: 왼쪽 기준 정렬. 상단에 이름과 공정 탭, 아래에 실험 무대(연한 바탕)와 조작판을 나란히 둔다. */
+:root{
+  --bg:#f4f5f1; --panel:#ffffff; --stage:#e8ebe3; --ink:#222a22; --muted:#5d675d; --line:#d6dbd0;
+  --accent:#a8480f; --accent-ink:#ffffff;
+  --ca:#2f80c9; --cb:#e8820c; --cc:#7a58b0; --cd:#d9ac00;
+  --hot:#d1471f; --cool:#2d7fc4; --solid:#8a5a2b; --water:#5aa9e0; --leaf:#4d8512;
+  --good:#17803f; --bad:#c23b3b;
+  --display:'Black Han Sans','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141713; --panel:#1d221b; --stage:#272d24; --ink:#eaf0e4; --muted:#a3ae9c; --line:#363e32;
+    --accent:#ff9a5c; --accent-ink:#2a1103;
+    --ca:#5aa6ea; --cb:#ffa238; --cc:#b49be3; --cd:#f0c53a;
+    --hot:#ff7f56; --cool:#6fb3f2; --solid:#c79a68; --water:#7cc0f2; --leaf:#8fcf4d;
+    --good:#4cc885; --bad:#ff7d7d; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141713; --panel:#1d221b; --stage:#272d24; --ink:#eaf0e4; --muted:#a3ae9c; --line:#363e32;
+  --accent:#ff9a5c; --accent-ink:#2a1103;
+  --ca:#5aa6ea; --cb:#ffa238; --cc:#b49be3; --cd:#f0c53a;
+  --hot:#ff7f56; --cool:#6fb3f2; --solid:#c79a68; --water:#7cc0f2; --leaf:#8fcf4d;
+  --good:#4cc885; --bad:#ff7d7d; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.65 var(--body);padding-block:22px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto}
+.kicker{font:500 12px var(--mono);letter-spacing:.08em;color:var(--accent);margin:0}
+h1{font:400 clamp(32px,7vw,50px)/1.08 var(--display);margin:6px 0 8px;letter-spacing:-.01em;text-wrap:balance}
+h2{font:600 21px/1.35 var(--body);margin:0 0 4px;text-wrap:balance}
+h3{font:600 15px/1.4 var(--body);margin:0 0 6px}
+p{margin:0}
+.lead{color:var(--muted);max-width:60ch}
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);margin:20px 0 24px;scrollbar-width:thin}
+.tabs button{flex:none;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:10px 13px;font:600 15px var(--body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.head{margin-bottom:16px;max-width:68ch}
+.head p{color:var(--muted)}
+.principle{display:inline-block;margin-top:8px;font:500 12px var(--mono);background:var(--stage);padding:3px 8px;border-radius:4px;color:var(--ink)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:780px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--stage);border-radius:12px;padding:10px;min-width:0}
+.stage svg,.stage canvas{display:block;width:100%;height:auto;border-radius:8px}
+.ctrl{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.field label{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.field output{font:500 14px var(--mono);color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0 0}
+select{width:100%;font:500 15px var(--body);padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.btn{font:600 15px var(--body);border:0;border-radius:8px;padding:10px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font:600 14px var(--body);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stats div{background:var(--stage);border-radius:8px;padding:8px 10px;min-width:0}
+.stats b{display:block;font:500 17px var(--mono);font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted)}
+.meter{display:grid;grid-template-columns:84px minmax(0,1fr) 52px;gap:8px;align-items:center;font-size:13px}
+.meter b{font:500 13px var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.mbar{height:12px;border-radius:6px;background:var(--stage);overflow:hidden}
+.mbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+.msg{margin-top:10px;min-height:3.3em;font-weight:500}
+.sceneinfo{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.sceneinfo p{font-size:14px;color:var(--muted)}
+.sceneinfo p b{color:var(--ink)}
+details.think{margin-top:18px;border-left:3px solid var(--accent);padding:2px 0 2px 14px;max-width:68ch}
+details.think summary{cursor:pointer;font-weight:600}
+details.think p{margin-top:8px;color:var(--muted)}
+table.tbl{border-collapse:collapse;width:100%;font-size:14px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tbl th{background:var(--stage)}
+.scroll{overflow-x:auto}
+svg text{font-family:var(--body)}
+.t-cap{font-size:13px;fill:var(--muted)}
+.t-ink{fill:var(--ink)}
+.tick{font:500 11px var(--mono);fill:var(--muted)}
+.ax{stroke:var(--muted);stroke-width:1.5;fill:none}
+.ok{color:var(--good);font-weight:600}.no{color:var(--bad);font-weight:600}
+fieldset.q{border:0;border-top:1px solid var(--line);margin:0;padding:16px 0}
+fieldset.q legend{font-weight:600;padding:0;margin-bottom:8px;max-width:64ch}
+.opts{display:grid;gap:8px;max-width:64ch}
+.opt{text-align:left;font:500 15px var(--body);padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.opt.right{border-color:var(--good);background:var(--stage)}
+.opt.wrong{border-color:var(--bad)}
+.exp{margin-top:8px;color:var(--muted);max-width:64ch}
+.score{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.score b{font:500 22px var(--mono)}
+.foot{margin-top:36px;font-size:13px;color:var(--muted);max-width:68ch}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="kicker">식품과학 Ⅳ-02 · 식품 가공의 주요 공정</p>
+  <h1>식품 공정 실험실</h1>
+  <p class="lead">공정마다 장치를 고르고 조건을 바꿔 보며 원리를 가상 환경에서 확인해 봅시다. 교과서 161~169쪽 내용입니다.</p>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="공정 메뉴">
+  <button role="tab" id="t-sort" data-t="sort">선별·세척</button>
+  <button role="tab" id="t-crush" data-t="crush">분쇄</button>
+  <button role="tab" id="t-mix" data-t="mix">혼합</button>
+  <button role="tab" id="t-sep" data-t="sep">분리</button>
+  <button role="tab" id="t-extract" data-t="extract">추출·증류</button>
+  <button role="tab" id="t-dry" data-t="dry">건조·농축</button>
+  <button role="tab" id="t-cold" data-t="cold">냉장·냉동</button>
+  <button role="tab" id="t-shape" data-t="shape">성형</button>
+  <button role="tab" id="t-quiz" data-t="quiz">확인 퀴즈</button>
+</nav>
+
+<script>
+window.PL=(function(){
+  const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+  const L=(a,b,t)=>a+(b-a)*t, clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), sm=t=>t*t*(3-2*t);
+  const seg=(t,a,b)=>sm(clamp((t-a)/(b-a),0,1));
+  const tween=(ms,fn)=>new Promise(res=>{const t0=performance.now();(function f(now){const p=clamp((now-t0)/ms,0,1);fn(p);if(p<1)requestAnimationFrame(f);else res();})(t0);});
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  const rng=seed=>{let s=(seed>>>0)||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};};
+  const hooks={};
+  function chips(box,names,cb,start){
+    const el=typeof box==='string'?$(box):box; el.innerHTML='';
+    const bs=names.map((n,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>pick(i));el.appendChild(b);return b;});
+    function pick(i){bs.forEach((b,k)=>b.setAttribute('aria-pressed',String(k===i)));cb(i);}
+    pick(start||0); return pick;
+  }
+  function range(id,fmt,cb){
+    const r=$('#'+id),o=$('#'+id+'Out');
+    const f=()=>{if(o)o.textContent=fmt?fmt(+r.value):r.value;if(cb)cb(+r.value);};
+    r.addEventListener('input',f); if(o)o.textContent=fmt?fmt(+r.value):r.value; return f;
+  }
+  function loop(fn){let raf=0;return{start(){if(raf)return;const f=()=>{fn();raf=requestAnimationFrame(f);};raf=requestAnimationFrame(f);},stop(){cancelAnimationFrame(raf);raf=0;},get on(){return !!raf;}};}
+  function canvas(id,w,h){
+    const cv=$('#'+id),cx=cv.getContext('2d');
+    function fit(){const d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(w*d);cv.height=Math.round(h*d);cx.setTransform(d,0,0,d,0,0);}
+    cv.style.aspectRatio=w+'/'+h; fit(); return{cv:cv,cx:cx,fit:fit,w:w,h:h};
+  }
+  const col=n=>getComputedStyle(document.documentElement).getPropertyValue('--'+n).trim();
+  function meter(id,pct,txt){const m=$('#'+id);m.querySelector('i').style.width=clamp(pct,0,100)+'%';m.querySelector('b').textContent=txt;}
+  return{$:$,$$:$$,L:L,clamp:clamp,sm:sm,seg:seg,tween:tween,wait:wait,rng:rng,hooks:hooks,chips:chips,range:range,loop:loop,canvas:canvas,col:col,meter:meter};
+})();
+</script>
+<section id="p-sort" role="tabpanel" aria-labelledby="t-sort" hidden>
+  <div class="head">
+    <h2>선별과 세척: 원료를 가르고 씻는다</h2>
+    <p>수확한 원료를 잘 선별하면 공정이 표준화되고 균일한 제품을 얻습니다. 장치를 고르고 기준을 바꿔 가며 원료가 어떻게 갈리는지 보세요. (164~165쪽)</p>
+    <span class="principle">원리: 물리적 조작 · 유체 이동(세척)</span>
+  </div>
+  <div class="chips" id="sortChips"></div>
+  <div id="sortSim" class="grid2">
+    <div>
+      <div class="stage"><svg id="sortSvg" viewBox="0 0 640 330" role="img" aria-label="원료가 선별 장치를 지나 기준에 따라 갈리는 모습"></svg></div>
+      <p class="msg" id="sortMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div class="field" id="sortSlF"><label for="sortRange"><span id="sortSlLabel">체 눈 크기</span><output id="sortRangeOut"></output></label><input type="range" id="sortRange"></div>
+      <div class="field" id="sortMagF" hidden><label><input type="checkbox" id="sortMag" checked> 전자석 켜기</label></div>
+      <div class="row"><button class="btn" id="sortRun" type="button">선별 시작</button><button class="btn ghost" id="sortReset" type="button">처음으로</button></div>
+      <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div><b id="sortC0">0</b><span id="sortL0"></span></div>
+        <div><b id="sortC1">0</b><span id="sortL1"></span></div>
+      </div>
+      <div class="sceneinfo" id="sortInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <div id="washBox" hidden>
+    <style>.wrow{display:grid;grid-template-columns:70px minmax(0,1fr) auto 70px;gap:10px;align-items:center;border-top:1px solid var(--line);padding:10px 0}
+    @media(max-width:600px){.wrow{grid-template-columns:60px minmax(0,1fr)}.wrow .row,.wrow .wf{grid-column:1/-1}}
+    .wrow span.wd{font-size:14px;color:var(--muted)}</style>
+    <p class="lead" style="margin-bottom:8px">세척 방법은 물을 쓰는지에 따라 습식과 건식으로 나뉩니다. 각 방법이 어느 쪽인지 골라 보세요. (그림 Ⅳ-13)</p>
+    <div id="washList"></div>
+    <p class="msg" id="washMsg" role="status" aria-live="polite"></p>
+  </div>
+  <details class="think"><summary>생각해 보기: 정선과 선별은 어떻게 다를까?</summary>
+    <p>정선은 이물질을 제거하고 건전한 원료만 가려내는 것이고, 선별은 일정한 크기나 품질의 것만 고르는 것입니다.</p></details>
+  <details class="think"><summary>생각해 보기: 과일과 채소는 왜 크기보다 무게로 선별할까?</summary>
+    <p>무게 선별은 크기를 기준으로 하는 선별보다 더 정확하게 분리할 수 있기 때문입니다. 무게 선별 모드에서 기준을 바꿔 보세요.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,L=P.L,svg=$('#sortSvg');
+let mode=0,items=[],gs=[],wait={},val=6,mag=true,running=false,t0=0,plan=[],tEnd=0,scaleEv=[];
+const SY=165,HX=320,HY=46,BY=156,SPD=170;
+const MODES=[
+ {name:'체 분리 (크기)',sl:{label:'체 눈 크기',min:2,max:10,step:0.5,val:6,fmt:v=>v+' mm'},bins:['체 위 (큰 입자)','체 아래 (작은 입자)'],seed:3,
+  make:r=>Array.from({length:18},()=>{const v=2+Math.floor(r()*17)/2;return{v:v,rad:3+v*1.6,t:'g'};}),
+  rule:it=>it.v>=val?0:1,
+  info:'<p><b>크기</b>를 기준으로 하는 선별에는 곡물이나 소금에 쓰는 <b>체 분리</b>와 구형 원료에 쓰는 <b>롤러 선별</b>이 있습니다.</p><p>체 눈보다 큰 입자는 체 위에 남고, 작은 입자만 구멍으로 떨어집니다.</p>',
+  msg:c=>`체 눈(${val} mm)보다 작은 입자 ${c[1]}개는 아래로 떨어지고, 큰 입자 ${c[0]}개는 체 위에 남았습니다.`},
+ {name:'무게 선별',sl:{label:'무게 기준',min:100,max:240,step:10,val:160,fmt:v=>v+' g'},bins:['기준 미만 (저울 아래)','기준 이상 (선별기 끝)'],seed:7,
+  make:r=>Array.from({length:16},()=>{const v=80+Math.floor(r()*18)*10;return{v:v,rad:8+(v-80)/170*10,t:'f'};}),
+  rule:it=>it.v>=val?1:0,
+  info:'<p><b>무게</b>를 기준으로 하는 선별은 주로 과일이나 채소에 쓰며, 크기를 기준으로 하는 선별보다 더 정확하게 분리할 수 있습니다.</p><p>컨베이어로 한 줄씩 들어와 저울에서 무게를 잰 뒤, 기준 이상은 계속 가고 미만은 아래로 빠집니다.</p>',
+  msg:c=>`기준(${val} g) 이상 ${c[1]}개는 선별기 끝에 모이고, 미만 ${c[0]}개는 저울에서 아래 공간으로 떨어졌습니다.`},
+ {name:'자력 선별 (이물질)',sl:null,bins:['곡물 통 (선별기 끝)','자석에 붙은 쇳붙이'],seed:11,
+  make:()=>Array.from({length:14},(_,i)=>(i>0&&i%3===0)?{v:0,rad:7,t:'m'}:{v:0,rad:8,t:'g'}),
+  rule:it=>(it.t==='m'&&mag)?1:0,
+  info:'<p>쇠붙이 같은 <b>이물질</b>은 <b>전자석</b>을 이용하면 쉽게 제거할 수 있습니다.</p><p>곡물은 전자석 아래를 그대로 지나가고, 쇳붙이는 자석에 붙어 더 가지 못합니다.</p>',
+  msg:c=>mag?`전자석에 쇳붙이 ${c[1]}개가 붙어 통과하지 못했고, 곡물 ${c[0]}개만 끝에 모였습니다.`:'전자석이 꺼져 있어 쇳붙이가 곡물 통에 함께 들어갔습니다. 전자석을 켜고 다시 해 보세요.'},
+ {name:'세척 방법 분류',wash:true}
+];
+const WASH=[['침지',0,'액체에 충분히 담가 적셔서 표면의 이물질을 떼어 냅니다.'],['분무',0,'세척액을 뿜어 뿌려 씻어 냅니다.'],['부유',0,'물에 띄워 오염 물질을 분리합니다.'],['초음파',0,'초음파로 표면의 오염 물질을 털어 냅니다.'],['송풍',1,'바람을 불어 먼지를 날려 보냅니다.'],['자력',1,'자석으로 쇳가루 같은 이물질을 끌어냅니다.'],['정전기',1,'정전기로 먼지를 끌어당겨 떼어 냅니다.']];
+function pack(list,x0,x1,yBase,up){const out={};let x=x0,yb=yBase,rowH=0;
+  list.forEach(i=>{const r=items[i].rad;if(x+2*r>x1){x=x0;yb+=up*(rowH+2);rowH=0;}out[i]=[x+r,yb+up*r];x+=2*r+2;rowH=Math.max(rowH,2*r);});return out;}
+function ev(kf,t){
+  for(let i=1;i<kf.length;i++){if(t<=kf[i][0]){const a=kf[i-1],b=kf[i],u=P.clamp((t-a[0])/((b[0]-a[0])||1e-6),0,1),z=b[3];
+    const ex=z==='out'?1-(1-u)*(1-u):u,ey=z==='in'?u*u:z==='out'?1-(1-u)*(1-u):u;return[L(a[1],b[1],ex),L(a[2],b[2],ey)];}}
+  const l=kf[kf.length-1];return[l[1],l[2]];}
+function itemEl(it){
+  if(it.t==='m')return `<rect x="${-it.rad}" y="${-it.rad}" width="${2*it.rad}" height="${2*it.rad}" rx="2" fill="var(--muted)" stroke="var(--ink)" stroke-width="1.5"/>`;
+  if(it.t==='f')return `<circle r="${it.rad}" fill="var(--cb)" stroke="var(--solid)" stroke-width="1.5"/><text y="3.5" text-anchor="middle" font-size="9" font-weight="600" fill="#2a1103">${it.v}</text>`;
+  return `<circle r="${it.rad}" fill="var(--cd)" stroke="var(--solid)" stroke-width="1.5"/>`;
+}
+const box=(x,y,w,h,lab,lx,ly,anc)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/><text class="t-cap t-ink" x="${lx}" y="${ly}" text-anchor="${anc||'middle'}" font-weight="600">${lab}</text>`;
+function scene(){
+  const m=MODES[mode];let s='<text class="t-cap" x="30" y="14">투입 대기</text>';
+  if(mode===0){const g=6+3.2*val;
+    s+=`<path d="M270 18 L370 18 L345 50 L295 50 Z" fill="none" stroke="var(--ink)" stroke-width="3"/><text class="t-cap" x="395" y="40">원료 투입구</text>`;
+    s+=`<line x1="20" x2="620" y1="${SY+4}" y2="${SY+4}" stroke="var(--ink)" stroke-width="7" stroke-dasharray="26 ${g}"/><text class="t-cap" x="620" y="${SY+24}" text-anchor="end">체 (구멍 ${val} mm)</text>`;
+    s+=`<text class="t-cap t-ink" x="620" y="146" text-anchor="end" font-weight="600">체 위: 큰 입자가 남는 곳</text>`+box(40,236,560,86,m.bins[1],50,230,'start');
+  }else{
+    s+=`<rect x="20" y="${BY}" width="500" height="10" rx="3" fill="var(--muted)"/><circle cx="26" cy="${BY+5}" r="9" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="520" cy="${BY+5}" r="9" fill="none" stroke="var(--ink)" stroke-width="2"/><text class="t-cap" x="30" y="190">컨베이어</text>`;
+    s+=box(505,200,120,122,m.bins[mode===1?1:0],565,194);
+    if(mode===1){
+      s+=`<rect x="268" y="${BY-2}" width="64" height="14" fill="var(--bg)"/><rect x="268" y="${BY}" width="64" height="8" fill="var(--accent)"/><text class="t-cap" x="300" y="${BY+26}" text-anchor="middle">저울 접시</text>`;
+      s+=`<rect x="256" y="62" width="88" height="48" rx="6" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.5"/><text id="sortGauge" x="300" y="84" text-anchor="middle" font-family="var(--mono)" font-size="17" font-weight="600" fill="var(--ink)">- g</text><text id="sortGauge2" x="300" y="102" text-anchor="middle" class="t-cap">기준 ${val} g</text>`;
+      s+=`<line x1="300" y1="110" x2="300" y2="${BY}" stroke="var(--muted)" stroke-dasharray="3 3"/><line x1="268" y1="${BY+12}" x2="215" y2="236" stroke="var(--muted)" stroke-dasharray="4 4"/><line x1="332" y1="${BY+12}" x2="385" y2="236" stroke="var(--muted)" stroke-dasharray="4 4"/>`+box(170,236,260,86,m.bins[0],300,230);
+    }else{
+      s+=`<rect x="250" y="90" width="100" height="32" rx="6" fill="${mag?'var(--hot)':'var(--muted)'}" stroke="var(--ink)" stroke-width="2.5"/>`;
+      s+=`<text class="t-cap t-ink" x="300" y="82" text-anchor="middle" font-weight="600">전자석 ${mag?'ON':'OFF'}</text>`;
+      if(mag)s+=[0,1,2].map(k=>`<path d="M${268+k*32} 124 q0 14 ${k===1?0:(k-1)*-6} 24" stroke="var(--hot)" stroke-width="2" stroke-dasharray="3 3" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-12" dur=".7s" repeatCount="indefinite"/></path>`).join('');
+      s+=`<text class="t-cap" x="300" y="${BY+30}" text-anchor="middle">쇳붙이는 여기서 붙어 멈춤</text>`;
+    }
+  }
+  return s;
+}
+function draw(){svg.innerHTML=scene()+'<g id="sortItems">'+items.map(it=>`<g>${itemEl(it)}</g>`).join('')+'</g>';
+  gs=Array.from(svg.querySelectorAll('#sortItems>g'));$('#sortL0').textContent=MODES[mode].bins[0];$('#sortL1').textContent=MODES[mode].bins[1];}
+function reset(){
+  lp.stop();running=false;
+  gs.forEach((g,i)=>g.setAttribute('transform',`translate(${wait[i][0].toFixed(1)} ${wait[i][1].toFixed(1)})`));
+  $('#sortC0').textContent='0';$('#sortC1').textContent='0';
+  $('#sortMsg').textContent=MODES[mode].sl?'기준을 정하고 [선별 시작]을 눌러 보세요.':'전자석을 켜거나 끄고 [선별 시작]을 눌러 보세요.';
+}
+function makePlan(){
+  const m=MODES[mode],bin=items.map(it=>m.rule(it)),idx=b=>items.map((_,i)=>i).filter(i=>bin[i]===b);plan=[];scaleEv=[];
+  if(mode===0){
+    const g=6+3.2*val,per=26+g,hx=x=>P.clamp(46+g/2+Math.round((x-46-g/2)/per)*per,40,600);
+    const pb=pack(idx(0),40,600,SY,-1),ps=pack(idx(1),40,600,318,-1);
+    items.forEach((it,i)=>{const ts=0.3+i*0.42,w=wait[i];const kf=[[0,w[0],w[1]],[ts,w[0],w[1]],[ts+0.45,HX,HY]];
+      if(bin[i]===0)kf.push([ts+1.2,pb[i][0],pb[i][1],'in']);
+      else{const lx=hx(ps[i][0]),y=SY-it.rad;kf.push([ts+1.15,lx,y,'in'],[ts+1.27,lx+3,y],[ts+1.39,lx-3,y],[ts+1.51,lx,y],[ts+2.1,ps[i][0],ps[i][1],'in']);}
+      plan.push({kf:kf,bin:bin[i],end:kf[kf.length-1][0]});});
+  }else if(mode===1){
+    const pa=pack(idx(1),505,625,322,-1),pl=pack(idx(0),175,425,322,-1);
+    items.forEach((it,i)=>{const ts=0.3+i*0.5,y=BY-it.rad,w=wait[i],t1=ts+0.4+270/SPD,dw=0.75;
+      const kf=[[0,w[0],w[1]],[ts,w[0],w[1]],[ts+0.4,30,y],[t1,300,y],[t1+dw,300,y]];
+      if(bin[i]===1){const t2=t1+dw+220/SPD;kf.push([t2,520,y],[t2+0.55,pa[i][0],pa[i][1],'in']);}
+      else kf.push([t1+dw+0.6,pl[i][0],pl[i][1],'in']);
+      plan.push({kf:kf,bin:bin[i],end:kf[kf.length-1][0]});scaleEv.push([t1,t1+dw,i]);});
+  }else{
+    const pg=pack(idx(0),505,625,322,-1);let k=0;
+    items.forEach((it,i)=>{const ts=0.3+i*0.5,y=BY-it.rad,w=wait[i],tM=ts+0.4+232/SPD;
+      const kf=[[0,w[0],w[1]],[ts,w[0],w[1]],[ts+0.4,30,y]];
+      if(bin[i]===1){const sx=272+(k%5)*14,sy=131;k++;kf.push([tM,262,y],[tM+0.3,sx,sy,'out']);}
+      else{const t2=ts+0.4+490/SPD;kf.push([t2,520,y],[t2+0.55,pg[i][0],pg[i][1],'in']);}
+      plan.push({kf:kf,bin:bin[i],end:kf[kf.length-1][0]});});
+  }
+  tEnd=Math.max.apply(null,plan.map(p=>p.end))+0.3;
+}
+function tick(){
+  const t=(performance.now()-t0)/1000,c=[0,0];
+  plan.forEach((p,i)=>{const q=ev(p.kf,t);gs[i].setAttribute('transform',`translate(${q[0].toFixed(1)} ${q[1].toFixed(1)})`);if(t>=p.end)c[p.bin]++;});
+  $('#sortC0').textContent=c[0];$('#sortC1').textContent=c[1];
+  if(mode===1){const e=scaleEv.find(s=>t>=s[0]&&t<=s[1]),g=$('#sortGauge');
+    if(g){if(e){const v=items[e[2]].v;g.textContent=v+' g';$('#sortGauge2').textContent=v>=val?'기준 이상: 통과':'기준 미만: 아래로';}else{g.textContent='- g';$('#sortGauge2').textContent='기준 '+val+' g';}}}
+  if(t>tEnd){lp.stop();running=false;$('#sortMsg').textContent=MODES[mode].msg(c);}
+}
+const lp=P.loop(tick);
+function run(){reset();makePlan();t0=performance.now();running=true;lp.start();$('#sortMsg').textContent='선별 중입니다...';}
+function build(){
+  const m=MODES[mode];items=m.make(P.rng(m.seed));wait=pack(items.map((_,i)=>i),30,255,24,1);draw();reset();
+}
+function setMode(i){
+  mode=i;const m=MODES[i],wash=!!m.wash;lp.stop();
+  $('#sortSim').hidden=wash;$('#washBox').hidden=!wash;
+  if(wash){buildWash();return;}
+  $('#sortInfo').innerHTML=m.info;$('#sortSlF').hidden=!m.sl;$('#sortMagF').hidden=!!m.sl;
+  if(m.sl){const r=$('#sortRange');r.min=m.sl.min;r.max=m.sl.max;r.step=m.sl.step;r.value=m.sl.val;val=m.sl.val;$('#sortSlLabel').textContent=m.sl.label;$('#sortRangeOut').textContent=m.sl.fmt(val);}
+  build();
+}
+$('#sortRange').addEventListener('input',e=>{val=+e.target.value;$('#sortRangeOut').textContent=MODES[mode].sl.fmt(val);draw();reset();});
+$('#sortMag').addEventListener('change',e=>{mag=e.target.checked;draw();reset();});
+$('#sortRun').addEventListener('click',run);$('#sortReset').addEventListener('click',reset);
+function buildWash(){
+  const box=$('#washList');let done=0,ok=0;
+  box.innerHTML=WASH.map((w,i)=>`<div class="wrow" data-i="${i}"><b>${w[0]}</b><span class="wd">${w[2]}</span><span class="row"><button class="chip" data-a="0" type="button">습식</button><button class="chip" data-a="1" type="button">건식</button></span><span class="wf"></span></div>`).join('');
+  $('#washMsg').textContent='';
+  box.querySelectorAll('.wrow').forEach(row=>{row.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    if(row.dataset.done)return;row.dataset.done='1';const w=WASH[+row.dataset.i],a=+b.dataset.a,good=a===w[1];
+    done++;if(good)ok++;b.setAttribute('aria-pressed','true');
+    row.querySelector('.wf').innerHTML=good?'<span class="ok">○ 정답</span>':`<span class="no">× ${w[1]?'건식':'습식'}</span>`;
+    if(done===WASH.length)$('#washMsg').textContent=`${ok} / ${WASH.length}개를 맞혔어요. 침지, 분무, 부유, 초음파는 습식, 송풍, 자력, 정전기는 건식 세척입니다.`;}));});
+}
+P.chips('#sortChips',MODES.map(m=>m.name),setMode,0);
+P.hooks.sort={show(){},hide(){if(mode<3)reset();}};
+})();
+</script>
+<section id="p-crush" role="tabpanel" aria-labelledby="t-crush" hidden>
+  <div class="head">
+    <h2>분쇄: 작게 부술수록 일이 빨라진다</h2>
+    <p>분쇄는 원료를 원래 크기보다 작게 만드는 조작입니다. 분쇄기는 주로 쓰는 힘에 따라 네 종류로 나뉩니다. 분쇄기를 고르면 원료가 들어가 부서져 아래로 떨어지는 모습을 볼 수 있습니다. 분쇄 정도를 바꿔 보세요. (165쪽, 그림 Ⅳ-14)</p>
+    <span class="principle">원리: 물리적 조작</span>
+  </div>
+  <div class="chips" id="crushChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="crushCv" aria-label="분쇄기에 원료가 들어가 부서져 떨어지는 모습"></canvas></div>
+      <p class="msg" id="crushMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div class="field"><label for="crushLv">분쇄 정도 <output id="crushLvOut"></output></label><input type="range" id="crushLv" min="0" max="100" value="60"></div>
+      <div class="stats">
+        <div><b id="crSize">-</b><span>입자 크기</span></div>
+        <div><b id="crArea">-</b><span>표면적</span></div>
+        <div><b id="crTime">-</b><span>추출·건조 시간</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted)">같은 무게의 원료를 잘게 부술수록 겉넓이(표면적)가 늘어납니다. 수치는 이해를 돕는 모식값입니다.</p>
+      <div class="sceneinfo" id="crushInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <div style="margin-top:20px" class="scroll">
+    <table class="tbl" id="crushTbl"><thead><tr><th>주로 쓰는 힘</th><th>분쇄기</th><th>특징</th></tr></thead><tbody></tbody></table>
+  </div>
+  <details class="think"><summary>생각해 보기: 원료를 작게 부수면 어떤 점이 좋을까?</summary>
+    <p>조직이 파괴되어 유용 성분을 추출하고 분리하기 쉽고, 일정한 입자 형태가 되어 품질이 높아집니다. 표면적이 늘어 열전달과 효소 작용이 빨라지고, 건조·추출·용해·증자 시간이 짧아집니다. 최근에는 나노 크기까지 분쇄해 분산성과 생체 이용성을 높이기도 합니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,C=P.canvas('crushCv',520,300),cx=C.cx;
+const MI=[
+ {n:'해머 밀 (충격력)',row:0,force:'충격력',info:'<p><b>충격형 분쇄기</b>: 원료가 통 안으로 들어가면 빠르게 도는 해머가 아래쪽에서 때려 부숩니다. 작아진 분쇄물은 아래 체를 통해 떨어집니다. 해머 밀, 볼 밀이 있습니다.</p>'},
+ {n:'롤 밀 (압축력)',row:1,force:'압축력',info:'<p><b>압축형 분쇄기</b>: 마주 보고 도는 두 롤 사이로 원료가 끼어 눌려 부서집니다. 롤 사이 간격보다 작아지면 아래로 떨어집니다. 롤 밀이 대표적입니다.</p>'},
+ {n:'디스크 밀 (전단력)',row:2,force:'전단력',info:'<p><b>전단형 분쇄기</b>: 마주 보는 두 면이 서로 반대 방향으로 면을 따라 움직입니다. 좁아지는 틈에 끼인 원료가 비벼져 부서지며 떨어집니다. 디스크 밀, 버 밀이 있습니다.</p>'},
+ {n:'커팅 밀 (절단력)',row:3,force:'절단력',info:'<p><b>절단형 분쇄기</b>: 돌아가는 날이 원료를 잘라 작게 만듭니다. 커팅 밀, 초퍼가 있습니다.</p>'}];
+const G=0.18,R0=9.4,CX=260,CY=150;
+let cur=0,s=5,rOut=5,ps=[],pile=[],hts=new Array(80).fill(0),ang=0,fr=0,cnt=0;
+const big=p=>p.r>rOut*1.08;
+function clear(){ps=[];pile=[];hts.fill(0);fr=0;cnt=0;}
+function mk(x,y,r,vx,vy){return{x:x,y:y,r:r,vx:vx||0,vy:vy||0,tm:0};}
+function split(p,vx,vy,ox){const nr=p.r/Math.SQRT2,o=nr*0.8;p.dead=1;
+  [-1,1].forEach(k=>ps.push(mk(p.x+k*(ox==null?o:ox),p.y,nr,(vx||0)+k*(0.5+Math.random()*0.7),(vy||0)-Math.random()*0.5)));}
+function hw(y){return y<85?38:P.L(38,rOut*1.1,P.clamp((y-85)/120,0,1));}
+function settle(p){p.x=P.clamp(p.x,106+p.r,414-p.r);let c=P.clamp(Math.floor((p.x-100)/4),0,79);for(let d=1;d<=14;d++){const a=c-d,b=c+d;if(a>=0&&hts[a]<hts[c]-p.r*1.2){c=a;break;}if(b<80&&hts[b]<hts[c]-p.r*1.2){c=b;break;}}p.x=P.clamp(100+c*4+2,106+p.r,414-p.r);const y=288-hts[c]-p.r;
+  if(p.y>=y){hts[c]+=p.r*0.9;for(let d=-2;d<=2;d++){const k=c+d;if(k>=0&&k<80&&hts[k]<hts[c]-p.r*2)hts[k]=hts[c]-p.r*2;}
+    pile.push({x:P.clamp(p.x,106+p.r,414-p.r),y:Math.min(y,288-p.r),r:p.r});if(pile.length>420)pile.shift();p.dead=1;return true;}return false;}
+function step(){
+  fr++;
+  if(fr%55===1&&ps.length<200){ps.push(mk(CX+(Math.random()-.5)*(cur===1?10:16),52,R0,0,1));}
+  const dA=cur===0?0.05:0.035,L=ps.length;
+  for(let sub=0;sub<3;sub++){ang+=dA;if(cur===0||cur===3){
+    for(let i=0;i<L;i++){const p=ps[i];if(p.dead||!big(p))continue;
+      if(cur===0){for(let k=0;k<4;k++){const a=ang+k*Math.PI/2,tx=CX+78*Math.cos(a),ty=CY+78*Math.sin(a);
+        if(Math.hypot(p.x-tx,p.y-ty)<p.r+8){split(p,-Math.sin(a)*4,Math.cos(a)*4-1.5);break;}}}
+      else{for(let k=0;k<3;k++){const a=ang+k*2*Math.PI/3,ex=Math.cos(a),ey=Math.sin(a),
+        t=P.clamp(((p.x-CX)*ex+(p.y-CY)*ey),0,82),qx=CX+ex*t,qy=CY+ey*t;
+        if(Math.hypot(p.x-qx,p.y-qy)<p.r+1.5){split(p,-ey*1.5,ex*1.5,p.r*0.4);break;}}}
+    }}}
+  for(let i=0;i<L;i++){const p=ps[i];if(p.dead)continue;
+    p.vy=Math.min(p.vy+G,7);const B=big(p);
+    if(cur===1&&B){p.vy=Math.min(p.vy,3.5);}
+    p.x+=p.vx;p.y+=p.vy;p.vx*=B?0.985:0.93;
+    if(cur===0||cur===3){
+      if(B){const dx=p.x-CX,dy=p.y-CY,d=Math.hypot(dx,dy),R=90-p.r;
+        if(d>R){const nx=dx/d,ny=dy/d;p.x=CX+nx*R;p.y=CY+ny*R;const vn=p.vx*nx+p.vy*ny;if(vn>0){p.vx-=1.4*vn*nx;p.vy-=1.4*vn*ny;}p.vx*=0.9;}}
+    }else if(cur===1){
+      const o=46+rOut,cs=[[CX-o,-1],[CX+o,1]];let touch=0;
+      if(B){cs.forEach(c=>{const dx=p.x-c[0],dy=p.y-CY,d=Math.hypot(dx,dy),R=46+p.r;
+        if(d<R){touch++;const nx=dx/d,ny=dy/d;p.x=c[0]+nx*R;p.y=CY+ny*R;const vn=p.vx*nx+p.vy*ny;if(vn<0){p.vx-=1.2*vn*nx;p.vy-=1.2*vn*ny;}p.vx*=0.8;p.vy=Math.max(p.vy,0);}});
+        p.tm=touch===2?p.tm+1:Math.max(0,p.tm-1);
+        if(p.tm>24){split(p,0,0.8,p.r*0.6);}
+      }else if(p.y>96&&p.y<200){p.x+=(CX-p.x)*0.2;}
+    }else if(cur===2){
+      if(p.y>85&&p.y<208){const h=hw(p.y);
+        if(B&&p.r>h*0.98){p.vy=0;p.y-=G;p.x+=(CX-p.x)*0.3;p.tm++;if(p.tm>28)split(p,0,0.6,p.r*0.5);}
+        else{const m=Math.max(0,h-p.r);if(Math.abs(p.x-CX)>m){p.x=CX+Math.sign(p.x-CX)*m;p.vx=0;}if(B)p.vy=Math.min(p.vy,2.2);}}
+    }
+    if(!B&&p.y>238)settle(p);
+    if(p.x<8||p.x>512)p.dead=1;
+  }
+  ps=ps.filter(p=>!p.dead);
+}
+function disc(x,y,r,fc,sc){cx.beginPath();cx.arc(x,y,r,0,7);cx.fillStyle=fc;cx.fill();cx.lineWidth=1;cx.strokeStyle=sc;cx.stroke();}
+function draw(){
+  const ink=P.col('ink'),mu=P.col('muted'),cd=P.col('cd'),so=P.col('solid'),hot=P.col('hot'),st=P.col('stage');
+  cx.clearRect(0,0,520,300);cx.lineWidth=3;cx.strokeStyle=ink;cx.fillStyle=ink;cx.font='13px sans-serif';cx.textAlign='center';
+  cx.beginPath();cx.moveTo(200,10);cx.lineTo(320,10);cx.lineTo(284,52);cx.lineTo(236,52);cx.closePath();cx.stroke();cx.textAlign='left';cx.fillText('원료 투입',330,24);
+  if(cur===0||cur===3){
+    cx.lineWidth=3;cx.strokeStyle=ink;cx.beginPath();cx.arc(CX,CY,90,0,7);cx.stroke();
+    cx.save();cx.setLineDash([4,5]);cx.strokeStyle=mu;cx.lineWidth=5;cx.beginPath();cx.arc(CX,CY,93,0.2*Math.PI,0.8*Math.PI);cx.stroke();cx.restore();
+    cx.fillStyle=ink;cx.beginPath();cx.arc(CX,CY,11,0,7);cx.fill();
+    if(cur===0)for(let k=0;k<4;k++){const a=ang+k*Math.PI/2;cx.strokeStyle=ink;cx.lineWidth=4;cx.beginPath();cx.moveTo(CX,CY);cx.lineTo(CX+70*Math.cos(a),CY+70*Math.sin(a));cx.stroke();
+      cx.save();cx.translate(CX+78*Math.cos(a),CY+78*Math.sin(a));cx.rotate(a);cx.fillStyle=hot;cx.fillRect(-8,-9,16,18);cx.restore();}
+    else for(let k=0;k<3;k++){const a=ang+k*2*Math.PI/3;cx.fillStyle=hot;cx.beginPath();cx.moveTo(CX,CY);
+      cx.lineTo(CX+82*Math.cos(a)-5*Math.sin(a),CY+82*Math.sin(a)+5*Math.cos(a));cx.lineTo(CX+82*Math.cos(a)+5*Math.sin(a),CY+82*Math.sin(a)-5*Math.cos(a));cx.closePath();cx.fill();}
+  }else if(cur===1){
+    const o=46+rOut;[[CX-o,1],[CX+o,-1]].forEach(c=>{cx.fillStyle=st;cx.strokeStyle=ink;cx.lineWidth=3;cx.beginPath();cx.arc(c[0],CY,46,0,7);cx.fill();cx.stroke();
+      cx.lineWidth=2;cx.strokeStyle=mu;for(let k=0;k<6;k++){const a=c[1]*ang*0.6+k*Math.PI/3;cx.beginPath();cx.moveTo(c[0]+Math.cos(a)*34,CY+Math.sin(a)*34);cx.lineTo(c[0]+Math.cos(a)*46,CY+Math.sin(a)*46);cx.stroke();}
+      cx.fillStyle=ink;cx.beginPath();cx.arc(c[0],CY,5,0,7);cx.fill();});
+    cx.fillStyle=mu;cx.textAlign='center';cx.fillText('롤 사이 틈 = 분쇄 크기',CX,222);cx.textAlign='left';
+  }else{
+    const t=Math.sin(ang*1.5)*8;
+    [[-1,205],[1,315]].forEach(([sg])=>{cx.fillStyle=st;cx.strokeStyle=ink;cx.lineWidth=3;cx.beginPath();
+      const xo=sg<0?200:320;cx.moveTo(xo,85);cx.lineTo(CX+sg*hw(85),85);cx.lineTo(CX+sg*hw(205),205);cx.lineTo(xo,205);cx.closePath();cx.fill();cx.stroke();
+      cx.strokeStyle=hot;cx.lineWidth=2.5;for(let k=0;k<8;k++){const y=90+k*14+(sg<0?t:-t);if(y<88||y>200)continue;cx.beginPath();cx.moveTo(CX+sg*hw(y),y);cx.lineTo(CX+sg*(hw(y)+9),y+4);cx.stroke();}});
+    cx.fillStyle=mu;cx.textAlign='center';cx.fillText('두 면이 반대로 미끄러짐',CX,226);cx.textAlign='left';
+  }
+  cx.strokeStyle=mu;cx.lineWidth=1.5;cx.setLineDash([5,4]);cx.strokeRect(100,248,320,44);cx.setLineDash([]);
+  cx.fillStyle=mu;cx.textAlign='right';cx.fillText('분쇄물',94,274);cx.textAlign='left';
+  pile.forEach(q=>disc(q.x,q.y,q.r,cd,so));ps.forEach(p=>disc(p.x,p.y,p.r,cd,so));
+  cx.fillStyle=ink;cx.font='600 15px sans-serif';cx.textAlign='right';cx.fillText(MI[cur].force,510,30);cx.textAlign='left';
+}
+function stats(){
+  const lv=+$('#crushLv').value/100;s=10*(1-0.85*lv);rOut=1.4+0.8*s;const area=10/s;
+  $('#crSize').textContent=s.toFixed(1)+' mm';$('#crArea').textContent=area.toFixed(1)+'배';$('#crTime').textContent=Math.round(100/area)+'%';
+  $('#crushLvOut').textContent=Math.round(lv*100)+'%';
+  $('#crushMsg').textContent=lv<0.05?'분쇄 정도를 올리면 분쇄물이 작아지고 표면적이 늘어납니다.':`분쇄물 크기 ${s.toFixed(1)} mm: 표면적이 ${area.toFixed(1)}배가 되어 같은 처리에 드는 시간이 ${Math.round(100/area)}% 정도로 줄어듭니다.`;
+}
+function pick(i){cur=i;$('#crushInfo').innerHTML=MI[i].info;Array.from($('#crushTbl tbody').children).forEach((r,k)=>{r.style.background=k===MI[i].row?'var(--stage)':'';});clear();stats();}
+$('#crushTbl tbody').innerHTML=[['충격력','해머 밀, 볼 밀 (충격형)','빠르게 때려 부숨'],['압축력','롤 밀 (압축형)','두 롤 사이에서 눌러 부숨'],['전단력','디스크 밀, 버 밀 (전단형)','면을 따라 반대로 미끄러지며 비벼 부숨'],['절단력','커팅 밀, 초퍼 (절단형)','날로 잘라 부숨']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+$('#crushLv').addEventListener('input',()=>{stats();clear();});
+const lp=P.loop(()=>{step();draw();});
+P.chips('#crushChips',MI.map(m=>m.n),pick,0);
+P.hooks.crush={show(){C.fit();lp.start();},hide(){lp.stop();}};
+})();
+</script>
+<section id="p-mix" role="tabpanel" aria-labelledby="t-mix" hidden>
+  <div class="head">
+    <h2>혼합: 무엇을 섞느냐에 따라 이름이 다르다</h2>
+    <p>혼합은 둘 이상의 원료를 섞어 더 균일한 물질을 얻는 조작입니다. 섞는 대상에 따라 혼합, 교반, 반죽, 유화로 나뉩니다. 혼합기를 고르고 속도를 바꿔 가며 얼마나 고르게 섞이는지 보세요. (166쪽, 그림 Ⅳ-15)</p>
+    <span class="principle">원리: 물리적 조작 · 유체 이동(교반)</span>
+  </div>
+  <div class="chips" id="mixChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="mixCv" aria-label="입자와 액체가 섞이는 모습"></canvas></div>
+      <div class="legend" style="margin-top:8px" id="mixLegend"></div>
+    </div>
+    <div class="ctrl">
+      <div class="field"><label for="mixSp">섞는 속도 <output id="mixSpOut"></output></label><input type="range" id="mixSp" min="0" max="100" value="50"></div>
+      <div class="field" id="mixTypeF" hidden><label for="mixType">유화 유형</label><select id="mixType"><option value="0">O/W형: 물 속에 기름방울 (oil in water)</option><option value="1">W/O형: 기름 속에 물방울 (water in oil)</option></select></div>
+      <div class="field" id="mixEmuF" hidden><label><input type="checkbox" id="mixEmu" checked> 유화제 넣기</label></div>
+      <div class="meter" id="mixM1"><span id="mixM1L">균일도</span><div class="mbar"><i></i></div><b>0%</b></div>
+      <div class="meter" id="mixM2" hidden><span id="mixM2L">방울 크기</span><div class="mbar"><i></i></div><b>0%</b></div>
+      <div class="row"><button class="btn ghost" id="mixReset" type="button">처음부터 다시</button></div>
+      <p class="msg" id="mixMsg" role="status" aria-live="polite" style="margin:0"></p>
+      <div class="sceneinfo" id="mixInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <div style="margin-top:20px" class="scroll">
+    <table class="tbl"><thead><tr><th>섞는 대상</th><th>이름</th><th>장치·예</th></tr></thead><tbody>
+      <tr><td>입자·분말 상태의 고체</td><td>혼합 (mixing)</td><td>리본 혼합기, 텀블러 혼합기, 수직 스크루 혼합기</td></tr>
+      <tr><td>섞이는 액체끼리, 액체와 소량의 고체·기체</td><td>교반 (agitation)</td><td>패들 교반기, 원판 날개 교반기, 프로펠러 교반기</td></tr>
+      <tr><td>고체와 액체</td><td>반죽 (kneading)</td><td>혼합물의 성질과 양에 따라 혼합 원리가 달라짐</td></tr>
+      <tr><td>섞이지 않는 두 액체</td><td>유화 (emulsification)</td><td>기름과 물을 분산시켜 교질 상태로 균일하게 섞음</td></tr></tbody></table>
+  </div>
+  <details class="think"><summary>생각해 보기: 유화제를 빼면 왜 다시 층이 나뉠까?</summary>
+    <p>기름과 물은 서로 섞이지 않아서, 잘게 부서진 기름방울도 시간이 지나면 다시 합쳐지고 가벼운 기름이 위로 뜹니다. 유화제를 넣고 유화시키면 방울이 합쳐지지 않아 균일한 상태가 오래 유지됩니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,C=P.canvas('mixCv',600,300),cx=C.cx;
+let mode=0,ps=[],speed=50,emu=true,etype=0,ang=0,fr=0,em=null;
+const BOX=[[195,45,210,210,6,6],[215,40,170,220,6,6],[192,42,216,216,5,5]];
+function init(){
+  const r=P.rng(5+mode);ps=[];ang=0;
+  if(mode===0)for(let i=0;i<280;i++){let x,y;do{x=300+(r()*2-1)*98;y=165+r()*90;}while(Math.hypot(x-300,y-150)>98);ps.push({x:x,y:y,vx:0,vy:0,a:x<300?1:0});}
+  if(mode===1)for(let i=0;i<330;i++){const x=222+r()*156,y=140+r()*115;ps.push({x:x,y:y,vx:0,vy:0,a:x<300?1:0});}
+  if(mode===2)for(let i=0;i<360;i++){let x,y;do{x=300+(r()*2-1)*108;y=150+(r()*2-1)*108;}while(Math.hypot(x-300,y-150)>106);ps.push({x:x,y:y,vx:0,vy:0,a:y<150?1:0});}
+  if(mode===3){em={m:0,f:0,d:[]};const top=etype===0?[40,109]:[201,270];
+    for(let i=0;i<90;i++)em.d.push({hx:136+r()*328,hy:top[0]+8+r()*(top[1]-top[0]-16),sx:140+r()*320,sy:50+r()*210,ph:r()*6.28});}
+  measure();
+}
+function repel(){
+  const cs=8,g=new Map();
+  ps.forEach((p,i)=>{const k=Math.floor(p.x/cs)*100+Math.floor(p.y/cs);let a=g.get(k);if(!a){a=[];g.set(k,a);}a.push(i);});
+  ps.forEach((p,i)=>{const c0=Math.floor(p.x/cs),c1=Math.floor(p.y/cs);
+    for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const l=g.get((c0+a)*100+c1+b);if(!l)continue;
+      for(const j of l){if(j<=i)continue;const q=ps[j],dx=q.x-p.x,dy=q.y-p.y,d2=dx*dx+dy*dy;
+        if(d2<44&&d2>1e-4){const d=Math.sqrt(d2),k=(6.6-d)*0.5/d;p.x-=dx*k;p.y-=dy*k;q.x+=dx*k;q.y+=dy*k;}}}});
+}
+function step(){
+  const s=speed/100;
+  if(mode===0){const w=s*0.03;ang+=w;
+    ps.forEach(p=>{p.vy+=0.12;p.x+=p.vx;p.y+=p.vy;p.vx*=0.995;
+      let dx=p.x-300,dy=p.y-150;
+      if(w>0)for(let k=0;k<2;k++){const a=ang+k*Math.PI,ex=Math.cos(a),ey=Math.sin(a),t=P.clamp(dx*ex+dy*ey,55,102),qx=ex*t,qy=ey*t,ax=dx-qx,ay=dy-qy,dd=Math.hypot(ax,ay);
+        if(dd<5.5&&dd>1e-3){p.x=300+qx+ax/dd*5.5;p.y=150+qy+ay/dd*5.5;p.vx+=(-w*qy-p.vx)*0.3;p.vy+=(w*qx-p.vy)*0.3;dx=p.x-300;dy=p.y-150;}}
+      const d=Math.hypot(dx,dy),R=101;
+      if(d>R){const nx=dx/d,ny=dy/d;p.x=300+nx*R;p.y=150+ny*R;const vn=p.vx*nx+p.vy*ny;if(vn>0){p.vx-=1.3*vn*nx;p.vy-=1.3*vn*ny;}
+        p.vx+=(-dy*w-p.vx)*0.25;p.vy+=(dx*w-p.vy)*0.25;}
+      if(s>0){p.vx+=(Math.random()-.5)*0.1*s;}});
+    repel();}
+  else if(mode===1){ang+=s*0.25;
+    ps.forEach(p=>{const inZ=Math.abs(p.x-300)<13;
+      if(inZ&&s>0.02&&p.y>46){p.vy=-(0.8+3.2*s)+(Math.random()-.5)*0.4;p.vx+=(p.x<300?-1:1)*0.03;}
+      else{p.vy=Math.min(p.vy+0.12,3);if(!inZ&&p.y>185&&s>0.02)p.vx+=(300-p.x)*0.0007*(0.4+s);}
+      p.x+=p.vx;p.y+=p.vy;p.vx*=0.97;
+      if(inZ&&s>0.02&&p.y<=46){p.y=46;p.vy=-0.3;p.vx=(Math.random()<0.5?-1:1)*(1.2+Math.random()*2.2)*(0.5+s);}
+      if(p.x<219){p.x=219;p.vx=Math.abs(p.vx)*0.3;}if(p.x>381){p.x=381;p.vx=-Math.abs(p.vx)*0.3;}
+      if(p.y>257){p.y=257;p.vy=0;p.vx*=0.9;}if(p.y<42)p.y=42;});
+    repel();}
+  else if(mode===2){ang+=s*0.14;ps.forEach(p=>{const dx=p.x-300,dy=p.y-150,rr=Math.hypot(dx,dy),w=s*0.05/(1+rr/45),c=Math.cos(w),sn=Math.sin(w);
+    let nx=dx*c-dy*sn+(Math.random()-.5)*s*1.4,ny=dx*sn+dy*c+(Math.random()-.5)*s*1.4;const nr=Math.hypot(nx,ny);if(nr>106){nx*=106/nr;ny*=106/nr;}p.x=300+nx;p.y=150+ny;});}
+  else{
+    ang+=s*0.3;const cap=emu?1:0.55;
+    if(s>0.08){if(em.m<cap)em.m=Math.min(cap,em.m+s*0.011);else if(!emu)em.m=Math.max(cap,em.m-0.004);}
+    else if(!emu)em.m=Math.max(0,em.m-0.004);
+    const ft=emu?Math.min(1,s*1.3):s*0.3;em.f+=(ft-em.f)*(ft>em.f?0.02:0.005);
+  }
+}
+function draw(){
+  const ca=P.col('ca'),cb=P.col('cb'),ink=P.col('ink'),mu=P.col('muted'),cd=P.col('cd'),so=P.col('solid'),hot=P.col('hot'),st=P.col('stage');
+  cx.clearRect(0,0,600,300);cx.lineWidth=3;cx.strokeStyle=ink;cx.fillStyle=ink;cx.font='13px sans-serif';
+  const dot=p=>{cx.fillStyle=p.a?ca:cb;cx.fillRect(p.x-3,p.y-3,6,6);};
+  if(mode===0){
+    cx.save();cx.translate(300,150);cx.rotate(ang);cx.beginPath();cx.arc(0,0,106,0,7);cx.stroke();
+    cx.lineWidth=5;cx.strokeStyle=hot;for(let k=0;k<2;k++){const a=k*Math.PI;cx.beginPath();cx.moveTo(Math.cos(a)*55,Math.sin(a)*55);cx.lineTo(Math.cos(a)*102,Math.sin(a)*102);cx.stroke();}
+    cx.lineWidth=2;cx.strokeStyle=mu;cx.beginPath();cx.moveTo(-106,0);cx.lineTo(-96,0);cx.moveTo(0,-106);cx.lineTo(0,-96);cx.stroke();cx.restore();
+    cx.fillStyle=ink;cx.beginPath();cx.arc(300,150,6,0,7);cx.fill();
+    ps.forEach(dot);cx.fillStyle=mu;cx.fillText(speed>0?'통 전체가 돌며 가루가 올라갔다 떨어짐':'속도 0: 돌지 않음',20,24);
+  }else if(mode===1){
+    cx.beginPath();cx.moveTo(213,30);cx.lineTo(213,262);cx.lineTo(387,262);cx.lineTo(387,30);cx.stroke();
+    cx.fillStyle=ink;cx.fillRect(284,22,32,16);
+    cx.fillStyle=st;cx.fillRect(293,38,14,224);cx.strokeRect(293,38,14,224);
+    cx.strokeStyle=hot;cx.lineWidth=3;const ph=ang%1;for(let y=44;y<258;y+=14){const yy=y+ph*14,u=Math.sin(ang*3+y*0.4);cx.beginPath();cx.moveTo(293,yy);cx.lineTo(307,yy+5*u);cx.stroke();}
+    ps.forEach(dot);cx.fillStyle=mu;cx.fillText('가운데 스크루가 가루를 끌어올려 위에서 뿌림',20,24);
+  }else if(mode===2){
+    cx.beginPath();cx.arc(300,150,112,0,7);cx.stroke();ps.forEach(p=>{cx.fillStyle=p.a?ca:cb;cx.beginPath();cx.arc(p.x,p.y,3,0,7);cx.fill();});
+    cx.strokeStyle=ink;cx.lineWidth=6;cx.beginPath();cx.moveTo(300-Math.cos(ang)*70,150-Math.sin(ang)*70);cx.lineTo(300+Math.cos(ang)*70,150+Math.sin(ang)*70);cx.stroke();cx.fillStyle=ink;cx.beginPath();cx.arc(300,150,8,0,7);cx.fill();
+  }else{
+    const m=em.m,yb=etype===0?109:201,minC=etype===0?cd:ca,conC=etype===0?ca:cd,mn=etype===0?[40,109]:[201,270],mj=etype===0?[109,270]:[40,201];
+    cx.globalAlpha=0.5;cx.fillStyle=etype===0?ca:cd;cx.fillRect(130,mj[0],340,mj[1]-mj[0]);
+    cx.globalAlpha=0.5*(1-m);cx.fillStyle=minC;cx.fillRect(130,mn[0],340,mn[1]-mn[0]);
+    cx.globalAlpha=0.5*m;cx.fillStyle=conC;cx.fillRect(130,mn[0],340,mn[1]-mn[0]);cx.globalAlpha=1;
+    const r=(emu?P.L(11,3.2,em.f):P.L(11,5,em.f)*(1.2+0.6*(1-m))),mm=P.clamp(m*1.1,0,1),al=Math.min(1,m*3)*0.92,s=speed/100;
+    em.d.forEach(d=>{const x=P.L(d.hx,d.sx,mm)+Math.sin(fr*0.07+d.ph)*m*s*7,y=P.L(d.hy,d.sy,mm)+Math.cos(fr*0.06+d.ph)*m*s*7;
+      cx.globalAlpha=al;cx.fillStyle=minC;cx.beginPath();cx.arc(P.clamp(x,130+r,470-r),P.clamp(y,40+r,270-r),r,0,7);cx.fill();cx.lineWidth=1;cx.strokeStyle=so;cx.stroke();});
+    cx.globalAlpha=1;cx.strokeStyle=ink;cx.lineWidth=3;cx.strokeRect(130,40,340,230);
+    cx.lineWidth=4;cx.beginPath();cx.moveTo(300,16);cx.lineTo(300,150);cx.stroke();
+    if(speed>0){const L=50*Math.abs(Math.cos(ang));cx.lineWidth=6;cx.beginPath();cx.moveTo(300-L,150);cx.lineTo(300+L,150);cx.stroke();}
+    cx.fillStyle=ink;cx.font='600 13px sans-serif';
+    if(m<0.1){cx.fillText(etype===0?'기름 (노랑)':'기름 (노랑)',140,60);cx.fillText('물 (파랑)',140,262);}
+    cx.font='13px sans-serif';cx.fillStyle=mu;cx.fillText(m>0.9&&emu?(etype===0?'O/W: 물(파랑) 속에 기름(노랑) 방울':'W/O: 기름(노랑) 속에 물(파랑) 방울'):'',140,288);
+  }
+}
+function measure(){
+  if(mode<3){
+    const b=BOX[mode],x0=b[0],y0=b[1],w=b[2],h=b[3],nx=b[4],ny=b[5],cells=Array.from({length:nx*ny},()=>[0,0]);
+    ps.forEach(p=>{const i=P.clamp(Math.floor((p.x-x0)/w*nx),0,nx-1),j=P.clamp(Math.floor((p.y-y0)/h*ny),0,ny-1);cells[j*nx+i][p.a]++;});
+    let sum=0,k=0;cells.forEach(c=>{const n=c[0]+c[1];if(n>=3){sum+=Math.abs(c[1]/n-0.5);k++;}});
+    const u=k?Math.max(0,Math.round(100*(1-2*sum/k))):0;P.meter('mixM1',u,u+'%');
+    $('#mixMsg').textContent=u>=90?'거의 균일하게 섞였습니다.':speed===0?'속도가 0이라 섞이지 않습니다. 속도를 올려 보세요.':'아직 한쪽에 치우쳐 있습니다. 더 기다리거나 속도를 올려 보세요.';
+  }else{
+    const m=Math.round(em.m*100),r=emu?P.L(11,3.2,em.f):P.L(11,5,em.f)*1.4;
+    P.meter('mixM1',m,m+'%');P.meter('mixM2',P.clamp(r/11*100,0,100),r.toFixed(0)+' px');
+    $('#mixMsg').textContent=speed===0&&em.m<0.05?'속도를 올려 저어 보세요. 기름(노랑)과 물(파랑)은 두 층으로 나뉘어 있습니다.':
+      emu?(em.m>0.9?'유화제 덕분에 방울이 합쳐지지 않아 멈춰도 균일한 상태가 유지됩니다.':'저을수록 '+(etype===0?'기름':'물')+'층이 잘게 부서져 퍼집니다. 세게 저을수록 방울이 작아집니다.'):
+      (speed>8?'유화제가 없으면 방울이 크고 일부만 섞입니다. 멈추면 다시 합쳐져 층이 나뉩니다.':'유화제가 없어 방울이 다시 합쳐지며 층이 나뉘고 있습니다.');
+  }
+}
+const INFO=[
+ '<p><b>텀블러 혼합기</b>: 통 전체가 돌면서 안쪽 날개가 가루를 위로 올렸다 떨어뜨려 섞습니다.</p>',
+ '<p><b>수직 스크루 혼합기</b>: 가운데 스크루가 돌며 아래의 가루를 위로 끌어올려 뿌리고, 바깥쪽으로 다시 내려오면서 섞입니다.</p>',
+ '<p><b>교반</b>: 섞이는 액체끼리 패들이나 프로펠러로 저어 균일하게 만듭니다.</p>',
+ '<p><b>유화</b>: 섞이지 않는 기름과 물을 한쪽 방울로 잘게 쪼개 퍼뜨립니다. <b>O/W형</b>(물 속 기름방울)은 우유, 마요네즈, <b>W/O형</b>(기름 속 물방울)은 버터, 마가린이 대표적입니다. 유화제가 방울이 합쳐지는 것을 막습니다.</p>'];
+function setMode(i){
+  mode=i;$('#mixEmuF').hidden=i!==3;$('#mixTypeF').hidden=i!==3;$('#mixM2').hidden=i!==3;
+  $('#mixM1L').textContent=i===3?'유화 정도':'균일도';$('#mixInfo').innerHTML=INFO[i];
+  $('#mixLegend').innerHTML=i<3?'<span style="--c:var(--ca)">원료 A (파랑)</span><span style="--c:var(--cb)">원료 B (주황)</span>':'<span style="--c:var(--cd)">기름 (노랑)</span><span style="--c:var(--ca)">물 (파랑)</span>';
+  init();
+}
+P.range('mixSp',v=>v,v=>{speed=v;});
+$('#mixEmu').addEventListener('change',e=>{emu=e.target.checked;});
+$('#mixType').addEventListener('change',e=>{etype=+e.target.value;init();});
+$('#mixReset').addEventListener('click',init);
+const lp=P.loop(()=>{fr++;step();draw();if(fr%12===0)measure();});
+P.hooks.mix={show(){C.fit();lp.start();},hide(){lp.stop();}};
+P.chips('#mixChips',['텀블러 혼합기 (분말)','스크루 혼합기 (분말)','교반 (액체)','유화 (기름+물)'],setMode,0);
+})();
+</script>
+<section id="p-sep" role="tabpanel" aria-labelledby="t-sep" hidden>
+  <div class="head">
+    <h2>분리: 필요한 성분만 뽑아낸다</h2>
+    <p>분리는 어떤 물질에서 특정 성분을 뽑아내는 조작입니다. 위에서 부은 액체가 거름막을 지나며 입자를 걸러 내는 여과·막 분리와, 무게 차이를 이용하는 정치·원심 분리를 직접 돌려 보세요. (166~167쪽, 그림 Ⅳ-16)</p>
+    <span class="principle">원리: 물질 이동 · 유체 이동(침강, 원심 분리)</span>
+  </div>
+  <div class="chips" id="sepChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><canvas id="sepCv" aria-label="분리 장치 안의 입자 움직임"></canvas></div>
+      <div class="legend" style="margin-top:8px" id="sepLegend"></div>
+      <p class="msg" id="sepMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div id="sepA" style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><label for="sepMem">분리막 고르기</label>
+          <select id="sepMem"><option value="0">여과 (여과포)</option><option value="1">정밀 여과법</option><option value="2">한외 여과법</option><option value="3">역삼투법</option></select></div>
+        <div class="field"><label for="sepPr">압력 <output id="sepPrOut"></output></label><input type="range" id="sepPr" min="0" max="100" value="80"></div>
+        <div class="row"><button class="btn ghost" id="sepFeed" type="button">원액 다시 붓기</button></div>
+        <table class="tbl"><thead><tr><th>입자</th><th>막에 남음</th><th>통과</th></tr></thead><tbody id="sepTbl"></tbody></table>
+      </div>
+      <div id="sepB" hidden style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><label for="sepSample">시료</label>
+          <select id="sepSample"><option value="0">우유에서 크림 분리 (가벼운 입자)</option><option value="1">녹말 정제 (무거운 입자)</option></select></div>
+        <div class="field"><label for="sepRpm">회전 속도 <output id="sepRpmOut"></output></label><input type="range" id="sepRpm" min="0" max="100" value="0"></div>
+        <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><b id="sepG">×1</b><span>중력의 배수</span></div><div><b id="sepT">0 s</b><span>경과 시간</span></div></div>
+        <div class="meter" id="sepM"><span>분리율</span><div class="mbar"><i></i></div><b>0%</b></div>
+        <div class="row"><button class="btn ghost" id="sepReset" type="button">처음부터 다시</button></div>
+      </div>
+      <div class="sceneinfo" id="sepInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <details class="think"><summary>생각해 보기: 회전 속도를 0으로 두면 어떤 분리일까?</summary>
+    <p>입자가 중력만으로 천천히 가라앉거나 뜨는 정치 분리입니다. 회전시키면 원심력이 더해져 같은 분리가 훨씬 빨라집니다. 우유의 크림 분리는 원심 분리, 녹말 정제는 정치 분리(침강) 방법으로 합니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,C=P.canvas('sepCv',600,300),cx=C.cx;
+const SP=[{n:'고형 찌꺼기',r:8,c:'solid',k:4},{n:'부유·콜로이드',r:6,c:'cc',k:6},{n:'단백질',r:4.5,c:'ca',k:8},{n:'당·염',r:3,c:'cb',k:14},{n:'물',r:2.2,c:'water',k:24}];
+const MEM=[
+ {pass:1,need:0,info:'<p><b>여과</b>: 간장이나 술에서 고체를 거르는 것처럼, 위에서 부은 액체가 거름망(여과포)을 지나 아래로 떨어지고 고형 찌꺼기는 망에 걸립니다. 틈이 가장 넓어 압력이 필요 없습니다.</p>'},
+ {pass:2,need:5,info:'<p><b>정밀 여과법</b>: 여과보다 틈이 좁아, 압력을 가해 부유 물질과 콜로이드까지 걸러 냅니다.</p>'},
+ {pass:3,need:20,info:'<p><b>한외 여과법</b>: 정밀 여과보다 더 좁은 틈으로 저분자 물질과 고분자 물질을 가를 때 씁니다. 유청 단백질 성분의 분리나 비열 처리 맥주의 효모 제거에 이용합니다.</p>'},
+ {pass:4,need:70,info:'<p><b>역삼투법</b>: 틈이 가장 좁은 반투막에서 진한 용액에 삼투압보다 높은 압력을 가해 물만 반대쪽으로 밀어 보냅니다. 주스의 농축, 정수기에 활용합니다.</p>'}];
+const INFOB=['<p><b>원심 분리</b>: 우유에서 크림을 분리하듯, 원심력으로 액체에서 액체를 가릅니다.</p><p><b>정치 분리</b>: 입자가 가라앉는 성질을 이용합니다(녹말 정제).</p>'];
+let sub=0,mem=0,pr=80,ps=[],q=[],rpm=0,sample=0,fr=0,tt=0;
+const GAP=()=>SP[MEM[mem].pass].r*2+2;
+const can=t=>t>=MEM[mem].pass&&pr>=MEM[mem].need;
+function initA(){const r=P.rng(9);ps=[];SP.forEach((s,t)=>{for(let i=0;i<s.k;i++)ps.push({t:t,x:200+s.r+r()*(200-2*s.r),y:(mem?52:40)+s.r+r()*(80-s.r),vx:0,vy:0,st:0});});}
+function restY(p,fl,st){let y=fl-SP[p.t].r;ps.forEach(q=>{if(q===p||q.st!==st||q.y<=p.y)return;const dx=Math.abs(q.x-p.x),sm=SP[p.t].r+SP[q.t].r;if(dx<sm)y=Math.min(y,q.y-Math.sqrt(sm*sm-dx*dx));});return y;}
+function stepA(){
+  const gap=GAP(),per=18+gap,vf=mem?0.8+pr/100*2.4:0.9;
+  ps.forEach(p=>{const s=SP[p.t],r=s.r,ok=can(p.t);
+    if(p.st===2){if(ok||restY(p,150,2)>p.y+0.6)p.st=0;else return;}
+    if(p.st===0){p.vy+=(vf-p.vy)*0.1;p.x+=(Math.random()-.5)*1.2;p.y+=p.vy;p.x=P.clamp(p.x,193+r,407-r);
+      if(mem&&p.y<48+r)p.y=48+r;
+      if(ok){if(p.y>112){const k=Math.round((p.x-190-18-gap/2)/per),hx=P.clamp(190+18+gap/2+k*per,193+r,407-r);p.x+=(hx-p.x)*0.2;}
+        if(p.y>150+r){p.st=1;p.vy=1;}}
+      else{const yr=restY(p,150,0);if(p.y>=yr){p.y=yr;p.st=2;p.vy=0;}}
+    }else{p.vy=Math.min(p.vy+0.1,2);p.y+=p.vy;p.x+=(Math.random()-.5)*0.8;p.x=P.clamp(p.x,193+r,407-r);const yr=restY(p,268,1);if(p.y>=yr){p.y=yr;p.vy=0;}}
+  });
+}
+function initB(){const r=P.rng(13+sample);q=[];tt=0;for(let i=0;i<70;i++)q.push({x:250+r()*100,y:42+r()*216,sz:0.7+r()*0.6});}
+function stepB(){
+  const g=1+Math.pow(rpm/100,2)*100,dir=sample?1:-1;
+  for(let k=0;k<3;k++){tt+=1/60;q.forEach(p=>{p.y=P.clamp(p.y+dir*0.06*Math.pow(g,0.6)*p.sz+(Math.random()-.5)*0.6,40,260);p.x=P.clamp(p.x+(Math.random()-.5)*0.8,248,352);});}
+}
+function drawA(){
+  const ink=P.col('ink'),mu=P.col('muted'),ca=P.col('ca'),hot=P.col('hot'),m=MEM[mem],gap=GAP();cx.clearRect(0,0,600,300);
+  const wn=ps.filter(p=>p.t===4&&p.st===1).length/SP[4].k;
+  cx.globalAlpha=0.16;cx.fillStyle=ca;cx.fillRect(190,mem?46:36,220,104);cx.fillRect(190,268-wn*70,220,wn*70+2);cx.globalAlpha=1;
+  cx.lineWidth=3;cx.strokeStyle=ink;cx.beginPath();cx.moveTo(190,mem?44:36);cx.lineTo(190,270);cx.lineTo(410,270);cx.lineTo(410,mem?44:36);cx.stroke();
+  if(mem){cx.fillStyle=ink;cx.fillRect(186,38,228,8);const n=5,L=6+pr*0.2;cx.strokeStyle=hot;cx.fillStyle=hot;cx.lineWidth=3;
+    for(let k=0;k<n;k++){const x=214+k*43;cx.beginPath();cx.moveTo(x,36-L);cx.lineTo(x,34);cx.stroke();cx.beginPath();cx.moveTo(x-5,30);cx.lineTo(x+5,30);cx.lineTo(x,37);cx.closePath();cx.fill();}
+    cx.fillStyle=hot;cx.font='600 13px sans-serif';cx.fillText('압력 '+pr,420,22);
+    cx.strokeStyle=ink;cx.lineWidth=2;cx.strokeRect(448,40,14,100);cx.fillStyle=hot;cx.fillRect(448,140-pr,14,pr);
+    if(m.need){cx.strokeStyle=ink;cx.beginPath();cx.moveTo(442,140-m.need);cx.lineTo(470,140-m.need);cx.stroke();cx.fillStyle=ink;cx.font='12px sans-serif';cx.fillText(mem===3?'삼투압':'필요 압력',472,144-m.need);}
+  }else{cx.strokeStyle=ink;cx.lineWidth=3;cx.beginPath();cx.moveTo(160,4);cx.lineTo(440,4);cx.lineTo(410,36);cx.lineTo(190,36);cx.closePath();cx.stroke();
+    cx.globalAlpha=0.35;cx.fillStyle=ca;cx.beginPath();cx.moveTo(165,6);cx.lineTo(435,6);cx.lineTo(408,34);cx.lineTo(192,34);cx.closePath();cx.fill();cx.globalAlpha=1;
+    for(let k=0;k<5;k++){const y=36+((fr*2+k*14)%20);cx.fillStyle=ca;cx.fillRect(220+k*40,y-6,3,6);}}
+  cx.save();cx.lineWidth=7;cx.strokeStyle=ink;cx.setLineDash([18,gap]);cx.beginPath();cx.moveTo(190,150);cx.lineTo(410,150);cx.stroke();cx.restore();
+  cx.fillStyle=mu;cx.font='13px sans-serif';cx.fillText('원액',140,70);cx.fillText('거른 액',122,230);
+  cx.fillStyle=ink;cx.font='600 13px sans-serif';cx.fillText(['여과포','정밀 여과막','한외 여과막','역삼투막'][mem],420,168);cx.font='12px sans-serif';cx.fillStyle=mu;cx.fillText('틈 '+gap.toFixed(1)+' (여과>정밀>한외>역삼투)',420,184);
+  ps.forEach(p=>{const s=SP[p.t];cx.fillStyle=P.col(s.c);cx.beginPath();cx.arc(p.x,p.y,s.r,0,7);cx.fill();});
+  if(pr<m.need){cx.fillStyle=hot;cx.font='600 14px sans-serif';cx.fillText(mem===3?'압력이 삼투압보다 낮아 물이 넘어가지 못해요':'압력이 너무 낮아요',20,292);}
+}
+function drawB(){
+  const ink=P.col('ink'),mu=P.col('muted'),cd=P.col('cd'),so=P.col('solid'),st=P.col('stage');cx.clearRect(0,0,600,300);
+  cx.lineWidth=3;cx.strokeStyle=ink;cx.fillStyle=st;cx.fillRect(240,30,120,240);cx.strokeRect(240,30,120,240);
+  cx.fillStyle=mu;cx.font='13px sans-serif';
+  cx.fillText(sample?'침전물 (위: 맑은 액)':'크림층 (아래: 탈지유)',376,sample?256:50);
+  q.forEach(p=>{cx.fillStyle=sample?so:cd;cx.beginPath();cx.arc(p.x,p.y,sample?4.5:4,0,7);cx.fill();});
+  if(rpm>0){cx.strokeStyle=P.col('accent');cx.lineWidth=3;cx.beginPath();cx.arc(150,150,40,0.3,5.2);cx.stroke();cx.fillStyle=P.col('accent');cx.fillText('회전',130,215);}
+}
+function measureB(){
+  const n=q.filter(p=>sample?p.y>212:p.y<88).length,pct=Math.round(n/q.length*100),g=1+Math.pow(rpm/100,2)*100;
+  P.meter('sepM',pct,pct+'%');$('#sepG').textContent='×'+Math.round(g);$('#sepT').textContent=Math.round(tt)+' s';
+  $('#sepMsg').textContent=rpm===0?'회전 없이 중력만으로 분리 중입니다(정치 분리). 매우 느립니다.':'원심력이 더해져 중력의 '+Math.round(g)+'배로 빠르게 분리됩니다(원심 분리).';
+}
+function tblA(){
+  $('#sepTbl').innerHTML=SP.map((s,t)=>{const l=ps.filter(p=>p.t===t&&p.st!==1).length,r=ps.filter(p=>p.t===t&&p.st===1).length;return `<tr><td><span style="color:var(--${s.c})">●</span> ${s.n}</td><td>${l}</td><td>${r}</td></tr>`;}).join('');
+  const blocked=SP.filter((s,t)=>!(t>=MEM[mem].pass)).map(s=>s.n);
+  $('#sepMsg').textContent=pr<MEM[mem].need?(mem===3?'압력을 삼투압(70)보다 높게 올려 보세요.':'압력을 올려 보세요.'):`이 분리막이 막는 입자: ${blocked.length?blocked.join(', '):'없음'}. 나머지는 통과합니다.`;
+}
+function setSub(i){
+  sub=i;$('#sepA').hidden=i!==0;$('#sepB').hidden=i!==1;
+  $('#sepA').style.display=i===0?'flex':'none';$('#sepB').style.display=i===1?'flex':'none';
+  $('#sepLegend').innerHTML=i===0?SP.map(s=>`<span style="--c:var(--${s.c})">${s.n}</span>`).join(''):'<span style="--c:var(--cd)">입자(크림 또는 녹말)</span>';
+  if(i===0){initA();memUi();$('#sepInfo').innerHTML=MEM[mem].info;tblA();}else{initB();$('#sepInfo').innerHTML=INFOB[0];measureB();}
+}
+function memUi(){$('#sepPr').disabled=mem===0;$('#sepPrOut').textContent=mem===0?'중력만 (불필요)':pr;}
+$('#sepMem').addEventListener('change',e=>{mem=+e.target.value;$('#sepInfo').innerHTML=MEM[mem].info;initA();memUi();tblA();});
+$('#sepFeed').addEventListener('click',()=>{initA();tblA();});
+P.range('sepPr',v=>v,v=>{pr=v;if(mem===0)$('#sepPrOut').textContent='중력만 (불필요)';});
+P.range('sepRpm',v=>v===0?'0 (정치)':v,v=>{rpm=v;});
+$('#sepSample').addEventListener('change',e=>{sample=+e.target.value;initB();});
+$('#sepReset').addEventListener('click',initB);
+const lp=P.loop(()=>{fr++;if(sub===0){stepA();drawA();if(fr%12===0)tblA();}else{stepB();drawB();if(fr%6===0)measureB();}});
+P.hooks.sep={show(){C.fit();lp.start();},hide(){lp.stop();}};
+P.chips('#sepChips',['여과·막 분리','정치·원심 분리'],setSub,0);
+})();
+</script>
+<section id="p-extract" role="tabpanel" aria-labelledby="t-extract" hidden>
+  <div class="head">
+    <h2>추출과 증류: 녹여서 뽑고, 끓여서 가른다</h2>
+    <p>추출은 용매로 원하는 물질을 녹여 내는 조작이고, 증류는 끓는점 차이로 성분을 가르는 조작입니다. 조건을 바꿔 결과가 어떻게 달라지는지 확인하세요. (167쪽)</p>
+    <span class="principle">원리: 물질 이동(추출) · 물질 및 열 이동(증류)</span>
+  </div>
+  <div class="chips" id="exChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><svg id="exSvg" viewBox="0 0 600 300" role="img" aria-label="추출 또는 증류 시뮬레이션 화면"></svg></div>
+      <p class="msg" id="exMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div id="exA" style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><label for="exSrc">원료와 뽑을 성분</label><select id="exSrc"></select></div>
+        <div class="field"><label for="exSol">용매</label><select id="exSol"></select></div>
+        <div class="field"><label for="exSize">입자 크기 <output id="exSizeOut"></output></label><input type="range" id="exSize" min="1" max="10" value="5"></div>
+        <div class="field"><label for="exTemp">온도 <output id="exTempOut"></output></label><input type="range" id="exTemp" min="20" max="90" value="50"></div>
+        <button class="btn" id="exRun" type="button">추출 시작</button>
+      </div>
+      <div id="exB" style="display:none;flex-direction:column;gap:12px">
+        <div class="field"><label for="dsT">가열 온도 <output id="dsTOut"></output></label><input type="range" id="dsT" min="70" max="100" value="82"></div>
+        <div class="row"><button class="btn" id="dsRun" type="button">가열 시작</button><button class="btn ghost" id="dsReset" type="button">처음으로</button></div>
+        <div class="stats"><div><b id="dsC">-</b><span>증류액 알코올</span></div><div><b id="dsV">0</b><span>증류액 양</span></div><div><b id="dsR">20%</b><span>남은 용액 알코올</span></div></div>
+      </div>
+      <div class="sceneinfo" id="exInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <details class="think"><summary>생각해 보기: 디카페인 커피에는 왜 초임계 이산화탄소를 쓸까?</summary>
+    <p>고압의 초임계 이산화탄소가 생두에 스며들어 카페인을 녹여 냅니다. 해로운 용매를 쓰지 않고, 용매가 남지 않으며, 용매를 다시 쓸 수 있습니다. 대신 특수한 설비가 필요해 비용이 많이 듭니다. (그림 Ⅳ-6 아래 정보 글)</p></details>
+  <details class="think"><summary>생각해 보기: 증류에서 온도를 너무 높이면 왜 알코올 농도가 낮아질까?</summary>
+    <p>끓는점이 높은 물까지 함께 증발해 증류액에 섞여 넘어가기 때문입니다. 끓는점 차이를 이용하려면 두 성분 사이의 온도를 지켜야 합니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,svg=$('#exSvg'),L=P.L;
+const SRC=[{n:'콩의 기름',s:[.05,.95,.85]},{n:'커피 가루 (인스턴트커피)',s:[.95,.05,.30]},{n:'사탕수수의 설탕',s:[.98,0,0]},{n:'생두의 카페인',s:[.55,.15,.98]}];
+const SOL=['물','헥세인 (유기 용매)','초임계 이산화탄소'];
+const INFO_A='<p><b>추출</b>: 고체나 액체 원료에서 용매로 원하는 물질을 용출시켜 분리하는 조작입니다. 콩과 옥수수 종실에서 유지 추출, 인스턴트커피나 홍차 제조, 사탕수수에서 설탕 추출이 대표적입니다.</p>';
+const INFO_B='<p><b>증류</b>: 두 종류 이상의 성분이 섞인 용액을 가열해 각 성분의 끓는점 차이로 분리합니다. 주정, 브랜디, 위스키, 소주 같은 증류주 제조, 과즙 농축, 유지의 탈취에 쓰입니다.</p>';
+let sub=0,src=0,sol=1,size=5,temp=50,busy=false,dT=82,ds,fr=0;
+function params(){const mx=SRC[src].s[sol],k=0.02*Math.pow(10/size,0.7)*(1+(temp-20)/40);return{mx:mx,k:k};}
+function drawX(tm){
+  const {mx,k}=params(),X=t=>60+t/60*520,Y=v=>250-v*220;let d='';
+  for(let t=0;t<=tm+0.001;t+=1)d+=(t?'L':'M')+X(t).toFixed(1)+' '+Y(mx*(1-Math.exp(-k*t))).toFixed(1)+' ';
+  let s='<line class="ax" x1="60" y1="30" x2="60" y2="250"/><line class="ax" x1="60" y1="250" x2="580" y2="250"/>';
+  [0,25,50,75,100].forEach(v=>{s+=`<text class="tick" x="52" y="${Y(v/100)+4}" text-anchor="end">${v}</text><line x1="60" x2="580" y1="${Y(v/100)}" y2="${Y(v/100)}" stroke="var(--line)" stroke-width="1"/>`;});
+  [0,20,40,60].forEach(t=>{s+=`<text class="tick" x="${X(t)}" y="268" text-anchor="middle">${t}</text>`;});
+  s+='<text class="t-cap" x="60" y="20">추출률 (%)</text><text class="t-cap" x="580" y="290" text-anchor="end">추출 시간 (분)</text>';
+  s+=`<line x1="60" x2="580" y1="${Y(mx)}" y2="${Y(mx)}" stroke="var(--muted)" stroke-dasharray="5 4"/><text class="t-cap" x="578" y="${Y(mx)-6}" text-anchor="end">용매가 녹일 수 있는 최대 ${Math.round(mx*100)}%</text>`;
+  s+=`<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="4.5" stroke-linecap="round"/><circle cx="${X(tm)}" cy="${Y(mx*(1-Math.exp(-k*tm)))}" r="6" fill="var(--accent)"/>`;
+  svg.innerHTML=s;
+}
+function msgX(){const {mx,k}=params(),y60=mx*(1-Math.exp(-k*60));
+  $('#exMsg').textContent=mx<0.3?`이 용매로는 '${SRC[src].n}'이 거의 녹아 나오지 않습니다. 용매를 바꿔 보세요.`:`60분 뒤 추출률은 약 ${Math.round(y60*100)}%입니다. 입자를 작게 하거나 온도를 높이면 더 빨리 뽑힙니다.`;}
+async function runX(){if(busy)return;busy=true;await P.tween(3200,p=>drawX(60*p));msgX();busy=false;}
+function drawD(){
+  const fillH=120*(ds.E+ds.W)/100,dTot=ds.De+ds.Dw,h2=P.clamp(70*dTot/60,0,70),on=ds.run&&dT>77;
+  let s=`<defs><clipPath id="flc"><circle cx="130" cy="190" r="58"/></clipPath></defs>`;
+  s+=`<rect x="70" y="${250-fillH}" width="120" height="${fillH}" clip-path="url(#flc)" fill="var(--ca)" opacity=".4"/><circle cx="130" cy="190" r="60" fill="none" stroke="var(--ink)" stroke-width="3"/><rect x="118" y="95" width="24" height="40" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+  s+=`<polyline points="130,95 300,95 470,200" fill="none" stroke="var(--ink)" stroke-width="14" stroke-linejoin="round"/><polyline points="130,95 300,95 470,200" fill="none" stroke="var(--stage)" stroke-width="8" stroke-linejoin="round"/>`;
+  s+=`<text class="t-cap" x="300" y="78" text-anchor="middle">냉각관 (증기를 다시 액체로)</text>`;
+  s+=`<rect x="440" y="206" width="90" height="70" rx="4" fill="none" stroke="var(--ink)" stroke-width="3"/><rect x="442" y="${276-h2}" width="86" height="${h2}" fill="var(--cd)" opacity=".55"/><text class="t-cap" x="485" y="296" text-anchor="middle">증류액</text>`;
+  if(on)s+=`<path d="M105 262 Q130 ${300-Math.min(40,(dT-77)*2)} 155 262 Z" fill="var(--hot)"/>`;
+  if(on)ds.bub.forEach(b=>{s+=`<circle cx="${b.x}" cy="${b.y}" r="${b.r}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`;});
+  svg.innerHTML=s;
+}
+function stepD(){
+  if(ds.run&&dT>77&&ds.E+ds.W>22){
+    const b=(dT-77)*0.0016,xe=ds.E/(ds.E+ds.W),y=P.clamp(0.92-(dT-78)*0.045,0,0.92)*Math.sqrt(xe/0.2),ye=P.clamp(y,0,0.95),dv=Math.min(b,ds.E+ds.W);
+    const de=Math.min(ds.E,dv*ye),dw=dv-de;ds.E-=de;ds.W-=dw;ds.De+=de;ds.Dw+=dw;
+    if(Math.random()<0.4)ds.bub.push({x:100+Math.random()*60,y:240,r:2+Math.random()*3});
+    if(ds.E+ds.W<=22){ds.run=false;$('#dsRun').textContent='가열 시작';}
+  }
+  ds.bub.forEach(b=>{b.y-=1.4;});ds.bub=ds.bub.filter(b=>b.y>150);
+  const dTot=ds.De+ds.Dw;
+  $('#dsC').textContent=dTot>0.05?Math.round(100*ds.De/dTot)+'%':'-';$('#dsV').textContent=dTot.toFixed(1);$('#dsR').textContent=Math.round(100*ds.E/(ds.E+ds.W))+'%';
+  $('#exMsg').textContent=dT<=77?'온도가 에탄올의 끓는점(약 78℃)에 못 미쳐 증발하지 않습니다.':dT>=95?'온도가 너무 높아 물이 많이 섞여 넘어갑니다. 증류액 알코올 농도가 낮아졌어요.':'에탄올이 먼저 끓어 증기가 되고, 냉각관에서 액체가 되어 알코올 농도가 높은 증류액이 모입니다.';
+}
+function resetD(){ds={E:20,W:80,De:0,Dw:0,run:false,bub:[]};$('#dsRun').textContent='가열 시작';stepD();drawD();}
+const lp=P.loop(()=>{if(sub===1){fr++;stepD();drawD();}});
+function setSub(i){
+  sub=i;$('#exA').style.display=i===0?'flex':'none';$('#exB').style.display=i===1?'flex':'none';
+  $('#exInfo').innerHTML=i===0?INFO_A:INFO_B;
+  if(i===0){lp.stop();drawX(60);msgX();}else{resetD();lp.start();}
+}
+$('#exSrc').innerHTML=SRC.map((s,i)=>`<option value="${i}">${s.n}</option>`).join('');
+$('#exSol').innerHTML=SOL.map((s,i)=>`<option value="${i}">${s}</option>`).join('');$('#exSol').value='1';
+const upd=()=>{if(!busy&&sub===0){drawX(60);msgX();}};
+$('#exSrc').addEventListener('change',e=>{src=+e.target.value;upd();});$('#exSol').addEventListener('change',e=>{sol=+e.target.value;upd();});
+P.range('exSize',v=>v+' mm',v=>{size=v;upd();});P.range('exTemp',v=>v+' ℃',v=>{temp=v;upd();});
+P.range('dsT',v=>v+' ℃',v=>{dT=v;});
+$('#exRun').addEventListener('click',runX);
+$('#dsRun').addEventListener('click',()=>{ds.run=!ds.run;$('#dsRun').textContent=ds.run?'가열 멈춤':'가열 시작';});
+$('#dsReset').addEventListener('click',resetD);
+P.hooks.extract={show(){if(sub===1)lp.start();},hide(){lp.stop();}};
+P.chips('#exChips',['추출','증류'],setSub,0);
+})();
+</script>
+<section id="p-dry" role="tabpanel" aria-labelledby="t-dry" hidden>
+  <div class="head">
+    <h2>건조와 농축: 수분을 빼서 오래 두고 쓴다</h2>
+    <p>건조는 수분을 제거해 수분 활성도를 낮추고 미생물의 성장을 억제합니다. 농축은 액체 원료에서 수분을 빼 농도를 높입니다. 방법을 바꿔 가며 수분이 줄어드는 모습을 보세요. (167~168쪽, 표 Ⅳ-7, 그림 Ⅳ-17)</p>
+    <span class="principle">원리: 물질 및 열 이동</span>
+  </div>
+  <div class="chips" id="dyChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><svg id="dySvg" viewBox="0 0 600 300" role="img" aria-label="건조 또는 농축 시뮬레이션 화면"></svg></div>
+      <p class="msg" id="dyMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div id="dyA" style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><label for="dyMet">건조 방법</label>
+          <select id="dyMet"><option value="0">열풍 건조 (대류)</option><option value="1">직접 접촉 (전도)</option><option value="2">전자기파 가열 (복사)</option><option value="3">동결 건조 (승화)</option></select></div>
+        <div class="field"><label for="dyT">건조 온도 <output id="dyTOut"></output></label><input type="range" id="dyT" min="40" max="120" value="70"></div>
+        <div class="field"><label for="dyTm">경과 시간 <output id="dyTmOut"></output></label><input type="range" id="dyTm" min="0" max="120" value="40"></div>
+        <button class="btn" id="dyPlay" type="button">처음부터 재생</button>
+        <div class="stats"><div><b id="dyM">-</b><span>수분 함량</span></div><div><b id="dyAw">-</b><span>수분 활성도</span></div><div><b id="dyW">-</b><span>무게(100 g 기준)</span></div></div>
+        <div class="meter" id="dyB1"><span>건조 속도</span><div class="mbar"><i></i></div><b></b></div>
+        <div class="meter" id="dyB2"><span>향미 보존</span><div class="mbar"><i></i></div><b></b></div>
+        <div class="meter" id="dyB3"><span>설비 비용</span><div class="mbar"><i></i></div><b></b></div>
+      </div>
+      <div id="dyB" style="display:none;flex-direction:column;gap:12px">
+        <div class="field"><label for="cnP">수분 제거 정도 <output id="cnPOut"></output></label><input type="range" id="cnP" min="0" max="100" value="40"></div>
+        <div class="stats"><div><b id="cnW">-</b><span>수분 함량</span></div><div><b id="cnG">-</b><span>남은 무게(g)</span></div><div><b id="cnS">-</b><span>최종 상태</span></div></div>
+      </div>
+      <div class="sceneinfo" id="dyInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <div style="margin-top:20px" class="scroll" id="dyTbl">
+    <table class="tbl"><thead><tr><th>증발 건조 방법</th><th>열전달 형태</th><th>방법</th></tr></thead><tbody>
+      <tr><td>열풍 건조</td><td>대류</td><td>가열된 공기를 자연 대류 또는 강제 순환시킴</td></tr>
+      <tr><td>직접 접촉</td><td>전도</td><td>가열된 면에 식품을 접촉시켜 가열함</td></tr>
+      <tr><td>전자기파 가열법</td><td>복사</td><td>마이크로파 또는 적외선을 쬐어 가열함</td></tr></tbody></table>
+  </div>
+  <details class="think"><summary>생각해 보기: 건조와 농축은 어떻게 다를까?</summary>
+    <p>수분을 제거한다는 점은 같지만, 최종 산물이 건조는 고체, 농축은 액체입니다. 분유는 우유의 수분(약 87%)을 5% 이하로 줄인 건조 식품이고, 가당 연유는 27% 이하로 줄인 농축 식품입니다.</p></details>
+  <details class="think"><summary>생각해 보기: 동결 건조 식품은 왜 비쌀까?</summary>
+    <p>얼린 상태에서 수분을 승화시켜 말리기 때문에 향미 보존과 복원력이 좋지만, 표면이 극도로 산화되기 쉬워 포장이 필요하고 진공 유지와 냉동에 건조 비용이 많이 들어 고가 제품에 많이 쓰입니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,svg=$('#dySvg'),L=P.L;
+const MET=[
+ {n:'열풍 건조',k:0.030,b:[3,2,1],i:'<p><b>열풍 건조</b>: 가열된 공기를 순환시켜 표면의 수분을 날립니다. <b>대류</b> 열전달입니다.</p>'},
+ {n:'직접 접촉',k:0.045,b:[4,2,2],i:'<p><b>직접 접촉</b>: 가열된 면에 식품을 닿게 해 열을 줍니다. <b>전도</b> 열전달입니다.</p>'},
+ {n:'전자기파 가열',k:0.070,b:[5,3,3],i:'<p><b>전자기파 가열</b>: 마이크로파나 적외선을 쬐어 가열합니다. <b>복사</b> 열전달입니다.</p>'},
+ {n:'동결 건조',k:0.022,b:[2,5,5],i:'<p><b>동결 건조</b>: 수분을 얼린 상태에서 <b>승화</b>시켜 말립니다. 다공질이라 가수 복원력이 좋고, 온도가 오르지 않아 향미 보존과 성분 변화가 적습니다.</p>'}];
+let sub=0,m=0,T=70,tm=40,busy=false,pcs=40;
+const Mof=t=>3+82*Math.exp(-MET[m].k*(m===3?1:1+(T-40)/50)*t);
+const awOf=M=>0.99*M*M/(M*M+225);
+function scene(){
+  const arrow=(x,y,dx,c)=>`<path d="M${x} ${y} h${dx}" stroke="var(--${c})" stroke-width="4" stroke-dasharray="8 8" fill="none" marker-end="none"><animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1s" repeatCount="indefinite"/></path>`;
+  if(m===0)return [0,1,2].map(k=>arrow(30,130+k*16,240,'hot')).join('')+`<text class="t-cap" x="150" y="118" text-anchor="middle">가열된 공기가 순환 (대류)</text><rect x="20" y="236" width="260" height="8" fill="var(--muted)"/>`;
+  if(m===1)return `<rect x="30" y="232" width="240" height="22" rx="4" fill="var(--hot)"/><text class="t-cap" x="150" y="272" text-anchor="middle">가열된 면에 접촉 (전도)</text>`;
+  if(m===2)return [70,130,190,250].map(x=>`<polyline points="${x},96 ${x+8},112 ${x},128 ${x+8},144 ${x},160" fill="none" stroke="var(--cd)" stroke-width="3"><animate attributeName="opacity" values="1;.2;1" dur="1s" repeatCount="indefinite"/></polyline>`).join('')+`<text class="t-cap" x="150" y="84" text-anchor="middle">마이크로파·적외선을 쬠 (복사)</text>`;
+  return [90,150,210].map(x=>`<path d="M${x} 190 v-60" stroke="var(--water)" stroke-width="4" stroke-dasharray="6 6" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1s" repeatCount="indefinite"/></path>`).join('')+`<text class="t-cap" x="150" y="118" text-anchor="middle">얼음이 바로 수증기로 (승화)</text><text class="t-cap" x="150" y="272" text-anchor="middle">진공·냉동 상태</text>`;
+}
+function drawDry(){
+  const M=Mof(tm),wt=1500/(100-M),aw=awOf(M),w=60+120*Math.sqrt(wt/100),dry=P.clamp(1-(M-3)/82,0,1);
+  const X=t=>340+t/120*240,Y=v=>250-v/90*210;let c='';
+  for(let t=0;t<=tm;t+=1)c+=(t?'L':'M')+X(t).toFixed(1)+' '+Y(Mof(t)).toFixed(1)+' ';
+  let s=scene();
+  s+=`<rect x="${150-w/2}" y="${m===1?208:196}" width="${w}" height="28" rx="6" fill="var(--leaf)"/><rect x="${150-w/2}" y="${m===1?208:196}" width="${w}" height="28" rx="6" fill="var(--solid)" opacity="${dry.toFixed(2)}"/>`;
+  s+=`<line class="ax" x1="340" y1="40" x2="340" y2="250"/><line class="ax" x1="340" y1="250" x2="585" y2="250"/><text class="t-cap" x="340" y="28">수분 함량 (%)</text><text class="t-cap" x="585" y="278" text-anchor="end">시간 (분)</text>`;
+  [0,30,60,90].forEach(v=>{s+=`<text class="tick" x="332" y="${Y(v)+4}" text-anchor="end">${v}</text>`;});[0,60,120].forEach(t=>{s+=`<text class="tick" x="${X(t)}" y="266" text-anchor="middle">${t}</text>`;});
+  s+=`<line x1="340" x2="585" y1="${Y(18.6)}" y2="${Y(18.6)}" stroke="var(--muted)" stroke-dasharray="5 4"/><text class="t-cap" x="583" y="${Y(18.6)-5}" text-anchor="end">수분 활성도 0.6 선</text>`;
+  s+=`<path d="${c}" fill="none" stroke="var(--accent)" stroke-width="4.5" stroke-linecap="round"/><circle cx="${X(tm)}" cy="${Y(M)}" r="6" fill="var(--accent)"/>`;
+  svg.innerHTML=s;
+  $('#dyM').textContent=M.toFixed(0)+'%';$('#dyAw').textContent=aw.toFixed(2);$('#dyW').textContent=wt.toFixed(0)+' g';
+  const mb=MET[m].b;['dyB1','dyB2','dyB3'].forEach((id,i)=>P.meter(id,mb[i]*20,mb[i]+'/5'));
+  const risk=aw>0.85?'아직 세균도 자랄 수 있는 상태':aw>0.6?'곰팡이·효모는 자랄 수 있는 상태':'미생물이 거의 자라지 못하는 상태';
+  $('#dyMsg').textContent=`수분 ${M.toFixed(0)}%, 수분 활성도 ${aw.toFixed(2)}: ${risk}입니다. 무게는 처음의 ${Math.round(wt)}%로 줄었습니다.`;
+  $('#dyTOut').textContent=m===3?'온도 영향 없음':T+' ℃';$('#dyT').disabled=m===3;$('#dyTmOut').textContent=tm+' 분';
+}
+function drawCon(){
+  const W=87-(87-3)*pcs/100,g=13+13*W/(100-W),h=P.clamp(g/100,0.02,1)*150,powder=W<=5,liq=W>27;
+  let s='<path d="M60 70 L60 250 Q60 262 72 262 L228 262 Q240 262 240 250 L240 70" fill="none" stroke="var(--ink)" stroke-width="3"/>';
+  if(!powder)s+=`<rect x="63" y="${260-h}" width="174" height="${h}" fill="var(--cd)" opacity="${(0.25+0.6*(1-W/87)).toFixed(2)}"/>`;
+  else s+='<path d="M80 260 Q150 205 220 260 Z" fill="var(--solid)" opacity=".6"/>';
+  s+=`<text class="t-cap" x="150" y="288" text-anchor="middle">${powder?'분말(고체)':'액체'}</text>`;
+  const X=v=>300+(87-v)/84*260;
+  s+=`<line class="ax" x1="300" y1="150" x2="560" y2="150"/>`;
+  [[87,'우유 87%'],[27,'가당 연유 27% 이하'],[5,'분유 5% 이하']].forEach(([v,t],i)=>{s+=`<circle cx="${X(v)}" cy="150" r="5" fill="var(--muted)"/><text class="t-cap" x="${X(v)+(i?(i>1?6:0):-6)}" y="${i===1?178:128}" text-anchor="${i===0?'start':i===2?'end':'middle'}">${t}</text>`;});
+  s+=`<circle cx="${X(W)}" cy="150" r="9" fill="var(--accent)"/><text class="t-cap t-ink" x="${X(W)}" y="214" text-anchor="middle" font-weight="600">지금 ${W.toFixed(0)}%</text><text class="t-cap" x="300" y="100">남은 수분 함량 (%)</text>`;
+  svg.innerHTML=s;
+  $('#cnPOut').textContent=pcs+'%';$('#cnW').textContent=W.toFixed(0)+'%';$('#cnG').textContent=g.toFixed(0)+' g';$('#cnS').textContent=powder?'고체 (건조)':'액체 (농축)';
+  $('#dyMsg').textContent=powder?'수분이 5% 이하로 줄어 고체 분말이 되었습니다. 최종 산물이 고체이므로 건조입니다.':liq?'수분을 증발시킬수록 부피가 줄고 농도가 높아집니다. 아직 액체입니다.':'수분이 27% 이하인 연유 수준입니다. 끈적한 액체로 남아 있으므로 농축입니다.';
+}
+function draw(){if(sub===0)drawDry();else drawCon();}
+async function play(){if(busy)return;busy=true;await P.tween(5000,p=>{tm=Math.round(120*p);$('#dyTm').value=tm;drawDry();});busy=false;}
+function setSub(i){
+  sub=i;$('#dyA').style.display=i===0?'flex':'none';$('#dyB').style.display=i===1?'flex':'none';$('#dyTbl').hidden=i===1;
+  $('#dyInfo').innerHTML=i===0?MET[m].i:'<p><b>농축</b>: 액체 원료에서 수분을 제거해 농도를 높입니다. 건조와 달리 최종 산물이 <b>액체</b>입니다. 증류와는 증기 성분을 응축시켜 제품으로 만드는지 여부가 다릅니다.</p><p>결정이나 건조를 위한 예비 농축, 용질의 분리, 잼처럼 새로운 물성과 풍미 부여, 저장성 향상, 수송비 절감에 씁니다.</p>';
+  draw();
+}
+$('#dyMet').addEventListener('change',e=>{m=+e.target.value;$('#dyInfo').innerHTML=MET[m].i;draw();});
+P.range('dyT',v=>v+' ℃',v=>{T=v;if(sub===0)drawDry();});P.range('dyTm',v=>v+' 분',v=>{tm=v;if(sub===0)drawDry();});P.range('cnP',v=>v+'%',v=>{pcs=v;if(sub===1)drawCon();});
+$('#dyPlay').addEventListener('click',play);
+P.hooks.dry={show(){},hide(){}};
+P.chips('#dyChips',['건조','농축'],setSub,0);
+})();
+</script>
+<section id="p-cold" role="tabpanel" aria-labelledby="t-cold" hidden>
+  <div class="head">
+    <h2>냉장과 냉동: 열을 빼앗아 온도를 낮춘다</h2>
+    <p>냉장은 0~10℃로 미생물 생육을 억제해 저장 기간을 단기간 늘리고, 냉동은 수분을 얼려(보통 -18℃ 이하) 장기간 저장합니다. 냉동기가 어떻게 열을 빼앗는지, 온도에 따라 무엇이 달라지는지 확인하세요. (168~169쪽, 그림 Ⅳ-18)</p>
+    <span class="principle">원리: 열전달</span>
+  </div>
+  <div class="chips" id="cdChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><svg id="cdSvg" viewBox="0 0 600 300" role="img" aria-label="증기 압축식 냉동기 또는 온도별 변화 그래프"></svg></div>
+      <p class="msg" id="cdMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div id="cdA" style="display:flex;flex-direction:column;gap:12px">
+        <div class="field"><label for="cdPow">압축기 출력 <output id="cdPowOut"></output></label><input type="range" id="cdPow" min="0" max="100" value="70"></div>
+        <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><b id="cdRoom">20 ℃</b><span>냉동실 온도</span></div><div><b id="cdState">상온</b><span>상태</span></div></div>
+        <div class="row" id="cdSteps"></div>
+        <button class="btn ghost" id="cdReset" type="button">실온(20℃)으로 되돌리기</button>
+      </div>
+      <div id="cdB" style="display:none;flex-direction:column;gap:12px">
+        <div class="field"><label for="cdT">저장 온도 <output id="cdTOut"></output></label><input type="range" id="cdT" min="-30" max="20" value="4"></div>
+        <div class="stats"><div><b id="cdZone">-</b><span>구간</span></div><div><b id="cdLong">-</b><span>저장 기간</span></div><div><b id="cdGrow">-</b><span>미생물 생육</span></div></div>
+      </div>
+      <div class="sceneinfo" id="cdInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <details class="think"><summary>생각해 보기: 냉매는 왜 증발할 때 주변을 차갑게 할까?</summary>
+    <p>액체가 기체로 변할 때는 주위의 열을 빼앗아 가기 때문입니다. 증발기에서 냉매가 기화하며 열을 빼앗아 냉동실 온도가 내려가고, 이 과정을 반복해 냉동 효과가 생깁니다.</p></details>
+  <details class="think"><summary>생각해 보기: 냉장고에 넣으면 오히려 좋지 않은 식품은?</summary>
+    <p>교과서는 냉장고에 넣으면 좋지 않은 식품의 종류를 조사해 보라고 합니다. 식품마다 알맞은 보관 온도가 다르니 직접 찾아 올바른 보관 방법을 정리해 보세요.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,svg=$('#cdSvg');
+const DEV=[
+ {n:'① 압축기',t:'냉매를 압축시켜 액체 상태로 만듭니다.',b:[400,40,90,50]},
+ {n:'② 수액기',t:'압축된 액체 냉매를 모아 둡니다.',b:[400,210,90,50]},
+ {n:'③ 팽창 밸브',t:'냉매를 분사해 액체와 기체의 혼합물 상태로 만듭니다.',b:[245,215,50,40]},
+ {n:'④ 증발기',t:'냉매가 기화하며 주위의 열을 빼앗아 온도가 내려갑니다.',b:[60,60,80,180]}];
+const INFO_A='<p><b>냉매</b>(암모니아 등)가 <b>증발해서 기체로 변할 때 주위의 열을 흡수</b>하는 것이 저온 설비의 원리입니다. 압축기 → 수액기 → 팽창 밸브 → 증발기를 돌며 반복됩니다.</p><p style="font-size:13px">○ 액체 냉매 &nbsp; ◐ 액체와 기체 혼합 &nbsp; ○(빈 원) 기체 냉매</p>';
+const INFO_B='<p><b>냉장 방법</b>: 빙장법, 냉장고 사용법, 빙온 저장법</p><p><b>냉동 방법</b>: 공기 동결법, 침지식 동결법, 심온 동결법, 접촉 동결법</p><p>냉동은 미생물의 생장과 증식을 억제하고 효소 반응을 저해해 화학적 변화를 억제합니다.</p>';
+let sub=0,pow=70,room=20,hl=-1,ps=[],T=4,fr=0;
+const LEN=[170,345,170,345],TOT=1030;
+function pt(s){s=((s%TOT)+TOT)%TOT;
+  if(s<170)return{x:100,y:235-s,k:'e',f:s/170};s-=170;
+  if(s<345)return{x:100+s,y:65,k:'g'};s-=345;
+  if(s<170)return{x:445,y:65+s,k:s<27?'g':'l'};s-=170;
+  return{x:445-s,y:235,k:445-s>270?'l':'m'};}
+function stepA(){
+  const v=pow*0.045;ps.forEach(p=>{p.s+=v;});
+  const target=20-pow/100*50;room+=(target-room)*0.003*(pow>0?1:0);if(pow===0)room+=(20-room)*0.001;
+}
+function drawA(){
+  let s='<rect x="30" y="40" width="150" height="224" rx="8" fill="var(--cool)" opacity=".18"/><text class="t-cap" x="36" y="58">냉동실</text>';
+  s+='<polyline points="100,235 100,65 445,65 445,235 100,235" fill="none" stroke="var(--line)" stroke-width="12" stroke-linejoin="round"/>';
+  s+='<polyline points="70,75 130,95 70,115 130,135 70,155 130,175 70,195 130,215" fill="none" stroke="var(--cool)" stroke-width="4"/>';
+  s+=[75,120,165,210].map(y=>`<path d="M20 ${y} h34" stroke="var(--hot)" stroke-width="3"/><polygon points="54,${y-5} 62,${y} 54,${y+5}" fill="var(--hot)"/>`).join('')+'<text class="t-cap" x="14" y="250" >열 흡수</text>';
+  DEV.forEach((d,i)=>{const b=d.b,on=hl===i;
+    if(i===2)s+=`<polygon points="250,225 270,235 250,245" fill="var(--stage)" stroke="${on?'var(--accent)':'var(--ink)'}" stroke-width="${on?5:3}"/><polygon points="290,225 270,235 290,245" fill="var(--stage)" stroke="${on?'var(--accent)':'var(--ink)'}" stroke-width="${on?5:3}"/>`;
+    else if(i===3)s+=`<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" rx="6" fill="none" stroke="${on?'var(--accent)':'var(--muted)'}" stroke-width="${on?5:2}" stroke-dasharray="5 4"/>`;
+    else s+=`<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" rx="6" fill="var(--stage)" stroke="${on?'var(--accent)':'var(--ink)'}" stroke-width="${on?5:3}"/>`;
+    const side=i<2,lx=side?b[0]+b[2]+8:i===3?100:270,ly=side?b[1]+b[3]/2+5:i===2?275:280;
+    s+=`<text class="t-cap t-ink" x="${lx}" y="${ly}" text-anchor="${side?'start':'middle'}" font-weight="600">${d.n.slice(2)}</text>`;});
+  ps.forEach(p=>{const q=pt(p.s),k=q.k==='e'?(q.f<0.35?'m':'g'):q.k;
+    if(k==='g')s+=`<circle cx="${q.x}" cy="${q.y}" r="4.5" fill="var(--bg)" stroke="var(--cool)" stroke-width="2"/>`;
+    else if(k==='l')s+=`<circle cx="${q.x}" cy="${q.y}" r="5" fill="var(--ca)"/>`;
+    else s+=`<circle cx="${q.x}" cy="${q.y}" r="5" fill="var(--ca)" opacity=".55"/><circle cx="${q.x}" cy="${q.y}" r="5" fill="none" stroke="var(--cool)" stroke-width="2" stroke-dasharray="4 4"/>`;});
+  svg.innerHTML=s;
+  const rr=Math.round(room);$('#cdRoom').textContent=rr+' ℃';$('#cdState').textContent=rr<=-18?'냉동 상태':rr<=10?'냉장 상태':'상온';
+  $('#cdMsg').textContent=hl>=0?DEV[hl].n+': '+DEV[hl].t:pow===0?'압축기가 꺼져 냉매가 돌지 않아 온도가 올라갑니다.':'냉매가 순환하며 증발기에서 열을 빼앗아 냉동실 온도가 내려갑니다.';
+}
+const gF=t=>t<=-18?0.01:t<0?0.04:Math.min(1,0.1*Math.pow(2,t/5)),eF=t=>t<=-18?0.02:t<0?0.08:Math.min(1,0.14*Math.pow(2,t/6));
+function drawB(){
+  const X=t=>60+(t+30)/50*520,Y=v=>250-v*210;let s='';
+  s+=`<rect x="${X(-30)}" y="40" width="${X(-18)-X(-30)}" height="210" fill="var(--cool)" opacity=".22"/><rect x="${X(0)}" y="40" width="${X(10)-X(0)}" height="210" fill="var(--water)" opacity=".22"/>`;
+  s+=`<text class="t-cap" x="${X(-30)+4}" y="56">냉동 (-18℃ 이하)</text><text class="t-cap" x="${X(0)+4}" y="56">냉장 (0~10℃)</text>`;
+  s+='<line class="ax" x1="60" y1="40" x2="60" y2="250"/><line class="ax" x1="60" y1="250" x2="580" y2="250"/><text class="t-cap" x="60" y="28">상대 활동 (1 = 상온 수준)</text><text class="t-cap" x="580" y="284" text-anchor="end">저장 온도 (℃)</text>';
+  [-30,-20,-10,0,10,20].forEach(t=>{s+=`<text class="tick" x="${X(t)}" y="266" text-anchor="middle">${t}</text>`;});
+  [['gF','accent'],['eF','cc']].forEach(([f,c],i)=>{let d='';for(let t=-30;t<=20;t+=0.5)d+=(t>-30?'L':'M')+X(t).toFixed(1)+' '+Y((i?eF:gF)(t)).toFixed(1)+' ';s+=`<path d="${d}" fill="none" stroke="var(--${c})" stroke-width="3.5"/>`;});
+  s+=`<text class="t-cap" x="580" y="${Y(1)+16}" text-anchor="end" fill="var(--accent)" style="fill:var(--accent)">미생물 생육</text><text class="t-cap" x="580" y="${Y(1)+32}" text-anchor="end" style="fill:var(--cc)">효소 반응</text>`;
+  s+=`<line x1="${X(T)}" x2="${X(T)}" y1="40" y2="250" stroke="var(--hot)" stroke-dasharray="4 3" stroke-width="2"/><circle cx="${X(T)}" cy="${Y(gF(T))}" r="6" fill="var(--hot)"/>`;
+  svg.innerHTML=s;
+  const zone=T<=-18?'냉동':T>=0&&T<=10?'냉장':T<0?'얼기 시작':'상온 쪽';
+  $('#cdZone').textContent=zone;$('#cdLong').textContent=T<=-18?'장기간':(T>=0&&T<=10)?'단기간':'짧음';$('#cdGrow').textContent=Math.round(gF(T)*100)+'%';$('#cdTOut').textContent=T+' ℃';
+  $('#cdMsg').textContent=T<=-18?'수분이 얼어 미생물 증식과 효소 반응이 크게 억제됩니다. 식품을 장기간 저장할 수 있어요.':(T>=0&&T<=10)?'미생물 생육이 억제되어 저장 기간이 단기간 늘어납니다. 냉동보다는 활동이 남아 있습니다.':T<0?'-18℃에 가까워질수록 억제 효과가 커집니다.':'온도가 높아 미생물과 효소가 활발합니다.';
+}
+function draw(){if(sub===0)drawA();else drawB();}
+function setSub(i){
+  sub=i;$('#cdA').style.display=i===0?'flex':'none';$('#cdB').style.display=i===1?'flex':'none';
+  $('#cdInfo').innerHTML=i===0?INFO_A:INFO_B;draw();
+}
+ps=Array.from({length:40},(_,i)=>({s:i*TOT/40}));
+$('#cdSteps').innerHTML=DEV.map((d,i)=>`<button class="chip" type="button" data-i="${i}" aria-pressed="false">${d.n}</button>`).join('');
+$('#cdSteps').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;hl=hl===i?-1:i;$('#cdSteps').querySelectorAll('button').forEach(c=>c.setAttribute('aria-pressed',String(+c.dataset.i===hl)));draw();}));
+P.range('cdPow',v=>v+'%',v=>{pow=v;});P.range('cdT',v=>v+' ℃',v=>{T=v;if(sub===1)drawB();});
+$('#cdReset').addEventListener('click',()=>{room=20;});
+const lp=P.loop(()=>{if(sub===0){stepA();drawA();}});
+P.hooks.cold={show(){lp.start();},hide(){lp.stop();}};
+P.chips('#cdChips',['냉동 사이클','저장 온도의 영향'],setSub,0);
+})();
+</script>
+<section id="p-shape" role="tabpanel" aria-labelledby="t-shape" hidden>
+  <div class="head">
+    <h2>성형: 모양과 크기를 만든다</h2>
+    <p>성형은 점도가 높거나 반죽과 같은 식품을 여러 모양과 크기로 바꿔 최종 형태를 만드는 조작으로, 보통 혼합 공정 뒤에 합니다. 방법을 골라 틀, 구멍, 롤의 조건을 바꿔 보세요. (169쪽, 표 Ⅳ-8, 그림 Ⅳ-19)</p>
+    <span class="principle">원리: 물리적 조작</span>
+  </div>
+  <div class="chips" id="shChips"></div>
+  <div class="grid2">
+    <div>
+      <div class="stage"><svg id="shSvg" viewBox="0 0 600 300" role="img" aria-label="성형 장치와 만들어지는 식품 모양"></svg></div>
+      <p class="msg" id="shMsg" role="status" aria-live="polite"></p>
+    </div>
+    <div class="ctrl">
+      <div class="field" id="shSelF"><label for="shSel" id="shSelL">틀 모양</label><select id="shSel"></select></div>
+      <div class="field" id="shPF"><label for="shP"><span id="shPL">롤 간격</span><output id="shPOut"></output></label><input type="range" id="shP" min="4" max="30" value="10"></div>
+      <div class="field"><label for="shT">진행 <output id="shTOut"></output></label><input type="range" id="shT" min="0" max="100" value="100"></div>
+      <button class="btn" id="shPlay" type="button">처음부터 재생</button>
+      <div class="sceneinfo" id="shInfo" style="padding:12px"></div>
+    </div>
+  </div>
+  <div style="margin-top:20px" class="scroll">
+    <table class="tbl"><thead><tr><th>성형 방법</th><th>특징</th><th>용도</th></tr></thead><tbody id="shTbl"></tbody></table>
+  </div>
+  <details class="think"><summary>생각해 보기: 성형은 왜 혼합 뒤에 할까?</summary>
+    <p>재료를 균일하게 섞어 반죽 같은 상태를 만든 다음에야 틀에 붓거나 구멍으로 밀어내거나 롤로 펼 수 있기 때문입니다. 성형은 가공 원료의 모양을 바꿔 외관을 좋게 하고 식품 고유의 특성을 나타내는 데 목적이 있습니다.</p></details>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$,svg=$('#shSvg'),L=P.L,seg=P.seg;
+const ST=[['주조 성형','일정한 모양의 틀을 이용하는 방법','빙과류, 빵, 두부 등'],['압출 성형','작은 구멍을 통해 강한 압력으로 밀어내는 방법','마카로니, 스낵 등'],['압연 성형','반죽을 회전 롤에 통과시키는 방법','국수, 비스킷 등'],['응괴 성형','입자가 작은 분말을 응집시켜 응괴 형태로 바꾸어 용해되기 쉽게 만드는 방법','조제분유, 인스턴트커피 또는 차 등'],['과립 성형','젖은 상태의 분체 식품이 압출될 때 회전 틀에 의해 펠릿으로 성형되는 방법','과립형 껌(자일리톨), 초콜릿 볼 등']];
+const OPT=[['사각 (두부)','원 (빵)','별 (빙과)'],['원','별','속이 빈 관 (마카로니)']];
+let mode=0,sel=0,pv=10,tt=100,busy=false;
+function star(cx,cy,r){let p='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*0.45:r;p+=(cx+Math.cos(a)*rr).toFixed(1)+','+(cy+Math.sin(a)*rr).toFixed(1)+' ';}return p;}
+function shp(k,cx,cy,r,fill,stroke,extra){
+  const st=`stroke="${stroke}" stroke-width="2.5" ${extra||''}`;
+  if(k===0)return `<rect x="${cx-r}" y="${cy-r}" width="${2*r}" height="${2*r}" rx="4" fill="${fill}" ${st}/>`;
+  if(k===1)return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${st}/>`;
+  if(k===2)return `<polygon points="${star(cx,cy,r*1.15)}" fill="${fill}" ${st}/>`;
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" ${st}/><circle cx="${cx}" cy="${cy}" r="${r*0.42}" fill="var(--stage)" ${st}/>`;
+}
+function scene(t){
+  const dough='var(--cd)',ink='var(--ink)',so='var(--solid)';let s='';
+  if(mode===0){
+    const k=[0,1,2][sel],fill=P.clamp(seg(t,0.1,0.65),0,1),out=seg(t,0.78,1);
+    s+=`<defs><clipPath id="mc"><rect x="200" y="${240-90*fill}" width="200" height="${90*fill}"/></clipPath></defs>`;
+    s+=`<rect x="200" y="150" width="200" height="100" rx="8" fill="var(--stage)" stroke="${ink}" stroke-width="3" opacity="${1-out*0.6}"/>`;
+    s+=shp(k,300,200,34,'none',ink,'stroke-dasharray="5 4"');
+    s+=`<g clip-path="url(#mc)" opacity="${1-out}">${shp(k,300,200,34,dough,so)}</g>`;
+    if(t<0.7)s+=`<path d="M300 50 V${Math.min(150,50+120*seg(t,0,0.15))}" stroke="${dough}" stroke-width="10" stroke-linecap="round" opacity="${t<0.65?1:0}"/><text class="t-cap" x="320" y="80">반죽·액체를 붓는다</text>`;
+    if(out>0)s+=shp(k,L(300,470,out),200-Math.sin(out*Math.PI)*30,34,dough,so)+`<text class="t-cap" x="470" y="262" text-anchor="middle">틀 모양대로 굳은 식품</text>`;
+  }else if(mode===1){
+    const k=[1,2,3][sel],len=L(0,200,seg(t,0.1,0.9)),off=(t*160)%24;
+    s+=`<defs><clipPath id="bc"><rect x="40" y="130" width="240" height="60"/></clipPath></defs><path d="M60 80 L130 80 L110 130 L80 130 Z" fill="var(--stage)" stroke="${ink}" stroke-width="3"/><text class="t-cap" x="95" y="70" text-anchor="middle">원료</text>`;
+    s+=`<rect x="40" y="130" width="240" height="60" rx="6" fill="var(--stage)" stroke="${ink}" stroke-width="3"/>`;
+    s+=`<g clip-path="url(#bc)">${Array.from({length:14},(_,i)=>`<line x1="${30+i*24-off+24}" y1="132" x2="${30+i*24-off+44}" y2="188" stroke="${ink}" stroke-width="3" opacity=".55"/>`).join('')}</g>`;
+    s+=`<rect x="280" y="118" width="14" height="84" fill="${ink}"/><text class="t-cap" x="287" y="218" text-anchor="middle">다이(작은 구멍)</text>`;
+    if(len>1)s+=`<rect x="294" y="${160-22}" width="${len}" height="44" rx="${k===3?20:6}" fill="${dough}" stroke="${so}" stroke-width="2.5"/>`+shp(k,294+len,160,22,dough,so);
+    s+=`<rect x="420" y="20" width="150" height="86" rx="8" fill="var(--panel)" stroke="var(--line)"/>`+shp(k,470,63,24,dough,so)+`<text class="t-cap" x="500" y="58">다이</text><text class="t-cap" x="500" y="76">단면</text>`;
+    s+=`<text class="t-cap" x="40" y="236">스크루가 밀어 강한 압력으로 압출</text>`;
+  }else if(mode===2){
+    const gap=pv,xs=L(-150,330,t),yy=150;
+    s+=`<circle cx="300" cy="${yy-30-gap/2+4}" r="30" fill="var(--stage)" stroke="${ink}" stroke-width="3"/><circle cx="300" cy="${yy+30+gap/2-4}" r="30" fill="var(--stage)" stroke="${ink}" stroke-width="3"/>`;
+    const a=P.clamp(xs,20,300),b=P.clamp(xs+300,300,580);
+    if(a<300)s+=`<rect x="${a}" y="${yy-15}" width="${300-a}" height="30" fill="${dough}" stroke="${so}" stroke-width="2"/>`;
+    if(xs+300>300&&xs<580)s+=`<rect x="300" y="${yy-gap/2}" width="${P.clamp(b-300,0,280)}" height="${gap}" fill="${dough}" stroke="${so}" stroke-width="2"/>`;
+    s+=`<text class="t-cap" x="150" y="230">두꺼운 반죽</text><text class="t-cap" x="450" y="230" text-anchor="middle">두께 ${gap} mm 로 펴짐</text>`;
+    s+=`<line x1="290" y1="${yy-gap/2}" x2="290" y2="${yy+gap/2}" stroke="var(--hot)" stroke-width="3"/>`;
+  }else if(mode===3){
+    const r=P.rng(5),e=seg(t,0.2,0.9)*(pv/100);let halo='',dots='';
+    const C=k=>[190+(k%4)*74,110+Math.floor(k/4)*100];
+    for(let k=0;k<8;k++){const c=C(k);halo+=`<circle cx="${c[0]}" cy="${c[1]}" r="${(30*e).toFixed(1)}" fill="${dough}" opacity=".4" stroke="${so}" stroke-dasharray="4 3" stroke-width="${e>0.15?1.5:0}"/>`;}
+    for(let i=0;i<64;i++){const bx=150+r()*300,by=60+r()*190,c=C(i%8),a=r()*6.28,rad=r()*16;dots+=`<circle cx="${L(bx,c[0]+Math.cos(a)*rad,e).toFixed(1)}" cy="${L(by,c[1]+Math.sin(a)*rad,e).toFixed(1)}" r="3.5" fill="${so}"/>`;}
+    s+=halo+dots+`<text class="t-cap" x="300" y="284" text-anchor="middle">${e<0.1?'작은 분말 입자':'수분을 주면 입자가 엉겨 용해되기 쉬운 응괴가 됨'}</text>`;
+  }else{
+    const n=Math.floor(t*14),ang=t*1080;
+    s+=`<rect x="120" y="110" width="14" height="80" fill="${ink}"/><text class="t-cap" x="127" y="104" text-anchor="middle">다이</text><rect x="40" y="130" width="80" height="40" rx="6" fill="var(--stage)" stroke="${ink}" stroke-width="3"/><text class="t-cap" x="80" y="196" text-anchor="middle">젖은 분체</text>`;
+    s+=`<rect x="134" y="142" width="${Math.min(120,40+t*400)}" height="16" fill="${dough}" stroke="${so}" stroke-width="2"/>`;
+    s+=`<g transform="rotate(${ang} 270 150)"><line x1="270" y1="150" x2="270" y2="108" stroke="${ink}" stroke-width="5"/><line x1="270" y1="150" x2="270" y2="192" stroke="${ink}" stroke-width="5"/></g><circle cx="270" cy="150" r="7" fill="${ink}"/><text class="t-cap" x="270" y="100" text-anchor="middle">회전 틀(절단기)</text>`;
+    for(let i=0;i<n;i++){const f=P.clamp((t-i/14)*5,0,1),x=320+(i%7)*34,y=L(160,250-Math.floor(i/7)*18,f);s+=`<rect x="${x}" y="${y}" width="22" height="14" rx="6" fill="${dough}" stroke="${so}" stroke-width="2"/>`;}
+    s+=`<text class="t-cap" x="450" y="284" text-anchor="middle">잘린 펠릿이 쌓임</text>`;
+  }
+  return s;
+}
+function draw(){svg.innerHTML=scene(tt/100);$('#shTOut').textContent=tt+'%';
+  const m=ST[mode];$('#shMsg').textContent=m[0]+': '+m[1]+'. 용도: '+m[2]+'.';}
+async function play(){if(busy)return;busy=true;await P.tween(3500,p=>{tt=Math.round(100*p);$('#shT').value=tt;draw();});busy=false;}
+function setMode(i){
+  mode=i;sel=0;
+  $('#shSelF').hidden=i>1;$('#shPF').hidden=i<2||i>3;
+  if(i<=1){$('#shSel').innerHTML=OPT[i].map((o,k)=>`<option value="${k}">${o}</option>`).join('');$('#shSelL').textContent=i?'다이 구멍 모양':'틀 모양';}
+  const pr=$('#shP');
+  if(i===2){pr.min=4;pr.max=30;pr.value=pv=10;$('#shPL').textContent='롤 간격';$('#shPOut').textContent=pv+' mm';}
+  if(i===3){pr.min=0;pr.max=100;pr.value=pv=70;$('#shPL').textContent='수분량';$('#shPOut').textContent=pv+'%';}
+  $('#shInfo').innerHTML=`<p><b>${ST[i][0]}</b>: ${ST[i][1]}.</p><p>용도: ${ST[i][2]}</p>`;
+  Array.from($('#shTbl').children).forEach((r,k)=>{r.style.background=k===i?'var(--stage)':'';});
+  draw();
+}
+$('#shTbl').innerHTML=ST.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+$('#shSel').addEventListener('change',e=>{sel=+e.target.value;draw();});
+$('#shP').addEventListener('input',e=>{pv=+e.target.value;$('#shPOut').textContent=pv+(mode===2?' mm':'%');draw();});
+$('#shT').addEventListener('input',e=>{tt=+e.target.value;draw();});
+$('#shPlay').addEventListener('click',play);
+P.hooks.shape={show(){},hide(){}};
+P.chips('#shChips',ST.map(x=>x[0]),setMode,0);
+})();
+</script>
+<section id="p-quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
+  <div class="head"><h2>확인 퀴즈</h2><p>실험에서 본 내용을 떠올리며 풀어 보세요. 고르면 바로 정답과 설명이 나옵니다.</p></div>
+  <div class="score"><span>맞힌 문제</span><b id="scoreOut">0 / 12</b><button class="btn ghost" id="quizReset" type="button">처음부터 다시</button></div>
+  <div id="quizList"></div>
+  <div style="margin-top:24px" class="scroll">
+    <h3>단위 조작을 원리로 묶어 보기 (표 Ⅳ-6)</h3>
+    <table class="tbl"><thead><tr><th>원리</th><th>단위 조작</th></tr></thead><tbody>
+      <tr><td>물질 이동</td><td>추출, 증류, 용매 회수, 결정화 등</td></tr>
+      <tr><td>물질 및 열 이동</td><td>건조, 농축, 증류 등</td></tr>
+      <tr><td>열전달</td><td>데치기, 끓이기, 볶음, 냉장, 냉동 등</td></tr>
+      <tr><td>유체 이동</td><td>세척, 침강, 원심 분리, 교반, 균질화 등</td></tr>
+      <tr><td>물리적 조작</td><td>분쇄, 제분, 성형, 포장, 수송 등</td></tr></tbody></table>
+  </div>
+</section>
+<script>
+(function(){
+const P=PL,$=P.$;
+const QZ=[
+ ['식품 제조 공정에서 원료에 물리적인 변화를 줄 목적으로 처리하는 조작을 무엇이라 하는가?',['단위 반응','단위 조작','발효','숙성'],1,'물리적 변화를 주는 조작은 단위 조작, 화학적 변화를 주는 조작은 단위 반응입니다. 실제 공정은 대부분 단위 조작입니다.'],
+ ['이물질을 제거하고 건전한 원료만 가려내는 것은?',['선별','정선','세척','분쇄'],1,'정선은 이물질을 제거하고 건전한 원료만 가려내는 것이고, 선별은 일정한 크기나 품질의 것만 고르는 것입니다.'],
+ ['두 롤 사이로 눌러 부수는 롤 밀은 어떤 힘을 주로 쓰는가?',['충격력','압축력','전단력','절단력'],1,'롤 밀은 압축형 분쇄기입니다. 해머 밀은 충격, 디스크 밀은 전단, 커팅 밀은 절단 방식입니다.'],
+ ['원료를 작게 분쇄했을 때 좋아지는 점이 아닌 것은?',['표면적이 늘어 효소 작용이 빨라진다','열전달이 빨라진다','추출과 분리가 쉬워진다','표면적이 줄어 건조가 빨라진다'],3,'분쇄하면 표면적은 늘어납니다. 표면적이 늘어 건조, 추출, 용해, 증자 시간이 짧아집니다.'],
+ ['기름과 물처럼 섞이지 않는 두 액체를 분산시켜 균일하게 섞는 조작은?',['혼합','반죽','유화','여과'],2,'유화는 서로 섞이지 않는 두 액체를 분산시켜 교질 상태로 균일하게 만드는 조작입니다.'],
+ ['반투막을 사이에 두고 삼투압보다 높은 압력을 가해 물을 이동시켜 주스를 농축하는 막 분리 방법은?',['정밀 여과법','한외 여과법','역삼투법','정치 분리'],2,'역삼투법은 진한 용액에 삼투압보다 높은 압력을 가해 물을 묽은 쪽으로 보냅니다. 주스의 농축, 정수기에 쓰입니다.'],
+ ['여러 성분이 섞인 용액에서 각 성분의 끓는점 차이를 이용해 분리하는 조작은?',['추출','증류','건조','성형'],1,'증류는 가열해서 끓는점이 낮은 성분을 먼저 증기로 만들어 분리합니다. 소주와 위스키 같은 증류주가 대표적입니다.'],
+ ['건조와 농축의 가장 큰 차이는?',['건조는 열을 쓰고 농축은 열을 쓰지 않는다','건조는 최종 산물이 고체이고 농축은 액체이다','건조는 수분을 더하고 농축은 뺀다','건조는 냉동에서만 한다'],1,'둘 다 수분을 제거하지만 최종 산물이 건조는 고체, 농축은 액체입니다.'],
+ ['열풍 건조에서 일어나는 주된 열전달 형태는?',['전도','대류','복사','승화'],1,'가열된 공기를 순환시키는 열풍 건조는 대류, 가열된 면에 닿는 직접 접촉은 전도, 마이크로파나 적외선은 복사입니다.'],
+ ['증기 압축식 냉동기에서 냉매가 기화하며 주위의 열을 빼앗는 장치는?',['압축기','수액기','팽창 밸브','증발기'],3,'증발기에서 냉매가 기체로 변하며 열을 빼앗아 온도가 내려갑니다.'],
+ ['작은 구멍을 통해 강한 압력으로 밀어내는 성형 방법으로 만드는 식품은?',['두부','마카로니','국수의 롤 성형','초콜릿 틀 성형'],1,'압출 성형은 마카로니, 스낵 등에 씁니다. 두부와 빵은 주조 성형, 국수와 비스킷은 압연 성형입니다.'],
+ ['표 Ⅳ-6에서 원심 분리가 속하는 원리는?',['물질 이동','열전달','유체 이동','물리적 조작'],2,'세척, 침강, 원심 분리, 교반, 균질화는 유체 이동 원리를 쓰는 단위 조작입니다.']
+];
+let score=0;
+function build(){
+  score=0;$('#scoreOut').textContent='0 / '+QZ.length;$('#quizList').innerHTML='';
+  QZ.forEach((q,qi)=>{
+    const f=document.createElement('fieldset');f.className='q';
+    f.innerHTML='<legend>'+(qi+1)+'. '+q[0]+'</legend><div class="opts"></div><p class="exp" hidden></p>';
+    const box=f.querySelector('.opts'),exp=f.querySelector('.exp');let done=false;
+    q[1].forEach((t,oi)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=t;
+      b.addEventListener('click',()=>{if(done)return;done=true;const ok=oi===q[2];if(ok)score++;
+        const bs=box.querySelectorAll('.opt');bs[q[2]].classList.add('right');bs[q[2]].textContent='○ '+q[1][q[2]];
+        if(!ok){b.classList.add('wrong');b.textContent='× '+t;}
+        exp.hidden=false;exp.textContent=(ok?'정답입니다. ':'아쉬워요. ')+q[3];$('#scoreOut').textContent=score+' / '+QZ.length;});
+      box.appendChild(b);});
+    $('#quizList').appendChild(f);
+  });
+}
+$('#quizReset').addEventListener('click',build);build();
+})();
+</script>
+<p class="foot">교과서 161~169쪽을 바탕으로 만든 교육용 모식 시뮬레이션입니다. 화면의 수치와 움직임은 개념 이해를 위한 값이며 실제 장치의 측정값이 아닙니다.</p>
+</div>
+<script>
+(function(){
+const P=PL,$=P.$;
+const TABS=['sort','crush','mix','sep','extract','dry','cold','shape','quiz'];
+let cur=null;
+function show(id){
+  if(TABS.indexOf(id)<0)id=TABS[0];
+  if(cur&&P.hooks[cur]&&P.hooks[cur].hide)P.hooks[cur].hide();
+  cur=id;
+  TABS.forEach(t=>{$('#p-'+t).hidden=(t!==id);$('#t-'+t).setAttribute('aria-selected',String(t===id));});
+  if(P.hooks[id]&&P.hooks[id].show)P.hooks[id].show();
+}
+P.$$('.tabs button').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.t;}));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+show(location.hash.slice(1));
+})();
+</script>
